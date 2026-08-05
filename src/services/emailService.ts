@@ -3,7 +3,7 @@ const SENDER_EMAIL = 'Edukalyan Foundation <onboarding@resend.dev>';
 const OFFICIAL_REPLY_TO = 'edukalyanfoundation@gmail.com';
 
 export const sendWelcomeEmail = async (fullName: string, userEmail: string) => {
-  const apiKey = import.meta.env.VITE_RESEND_API_KEY || 're_Ajdj1f49_CnvicgqUm6X5TfcPR5DJJuov';
+  const apiKey = import.meta.env.VITE_RESEND_API_KEY || '';
 
   if (!userEmail) {
     console.warn('[Resend Email]: No email provided for student.');
@@ -101,7 +101,7 @@ export const sendWelcomeEmail = async (fullName: string, userEmail: string) => {
 };
 
 export const sendPasswordResetEmail = async (userEmail: string, resetLink?: string) => {
-  const apiKey = import.meta.env.VITE_RESEND_API_KEY || 're_Ajdj1f49_CnvicgqUm6X5TfcPR5DJJuov';
+  const apiKey = import.meta.env.VITE_RESEND_API_KEY || '';
 
   if (!userEmail) return;
 
