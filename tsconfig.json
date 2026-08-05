@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "next/image": ["./src/lib/next-shim.tsx"],
+      "next/link": ["./src/lib/next-shim.tsx"],
+      "@edukalyan/types": ["../packages/types/src/index.ts"],
+      "@edukalyan/utils": ["../packages/utils/src/index.ts"],
+      "@edukalyan/ui": ["../packages/ui/src/index.ts"]
+    }
+  },
+  "include": ["src", "admin", "user", "public"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
