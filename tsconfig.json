@@ -20,9 +20,9 @@
       "@/*": ["./src/*"],
       "next/image": ["./src/lib/next-shim.tsx"],
       "next/link": ["./src/lib/next-shim.tsx"],
-      "@edukalyan/types": ["../packages/types/src/index.ts"],
-      "@edukalyan/utils": ["../packages/utils/src/index.ts"],
-      "@edukalyan/ui": ["../packages/ui/src/index.ts"]
+      "@edukalyan/types": ["./packages/types/src/index.ts"],
+      "@edukalyan/utils": ["./packages/utils/src/index.ts"],
+      "@edukalyan/ui": ["./packages/ui/src/index.ts"]
     }
   },
   "include": ["src", "admin", "user", "public"],

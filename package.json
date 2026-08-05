@@ -10,9 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@edukalyan/types": "*",
-    "@edukalyan/ui": "*",
-    "@edukalyan/utils": "*",
     "@hookform/resolvers": "^3.3.4",
     "@lottiefiles/dotlottie-react": "^0.19.12",
     "@radix-ui/react-avatar": "^1.0.4",
