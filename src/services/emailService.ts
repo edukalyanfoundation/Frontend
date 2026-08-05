@@ -53,7 +53,7 @@ export const sendWelcomeEmail = async (fullName: string, userEmail: string) => {
             </p>
 
             <div style="margin: 28px 0; text-align: center;">
-              <a href="http://localhost:5173/dashboard/profile" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 14px; display: inline-block; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);">Access Student Dashboard</a>
+              <a href="https://edukalyanfoundation.netlify.app/dashboard/profile" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 14px; display: inline-block; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);">Access Student Dashboard</a>
             </div>
 
             <hr style="border: 0; border-top: 1px solid #f1f5f9; margin-top: 28px; margin-bottom: 16px;" />
