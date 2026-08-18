@@ -83,25 +83,32 @@ export const DynamicCertificateModal: React.FC<DynamicCertificateModalProps> = (
       // Draw background image
       ctx.drawImage(bgImg, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-      // 2. Generate and Draw QR Code into Bottom Left Box (Sized neatly inside gold frame)
+      // 2. Generate and Draw High-Contrast QR Code into Bottom Left Box (Optimized for Google Lens & Phone Cameras)
+      const cleanStudentName = data.studentName
+        .trim()
+        .split(/\s+/)
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(' ');
+
       const qrPayload = [
-        `EDUKALYAN FOUNDATION - VERIFIED CERTIFICATE`,
-        `Candidate Name: ${data.studentName}`,
+        `EDUKALYAN FOUNDATION`,
+        `VERIFIED CERTIFICATE`,
+        `Candidate: ${cleanStudentName}`,
         `Course: ${data.courseName}`,
         `Roll No: ${data.universityRollNo}`,
         `Reg No: ${data.registrationNumber}`,
         `Certificate ID: ${data.certificateId}`,
         `Completion Date: ${data.completionDate}`,
-        `Verification URL: https://www.edukalyan.org/verify-certificate?id=${encodeURIComponent(data.certificateId)}`,
+        `Verify Link: https://www.edukalyan.org/verify-certificate?id=${encodeURIComponent(data.certificateId)}`,
       ].join('\n');
 
       try {
         const qrDataUrl = await QRCode.toDataURL(qrPayload, {
-          width: 126,
-          margin: 1,
+          width: 320, // High-res master source for crisp scaling
+          margin: 2,  // Standard quiet zone margin required for camera scanning
           color: {
-            dark: '#064e3b', // Rich dark green matching branding
-            light: '#ffffff',
+            dark: '#000000', // Pure Solid Black (100% optical readability for Google Lens)
+            light: '#ffffff', // Pure White background
           },
           errorCorrectionLevel: 'M',
         });
@@ -112,18 +119,15 @@ export const DynamicCertificateModal: React.FC<DynamicCertificateModalProps> = (
           qrImg.onload = () => res();
         });
 
-        // Centered perfectly inside the gold box (Box: X=120..280, Y=740..898)
-        ctx.drawImage(qrImg, 137, 756, 126, 126);
+        ctx.save();
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        // Perfectly positioned inside the golden square frame (Frame: X=120..280, Y=740..898)
+        ctx.drawImage(qrImg, 134, 752, 132, 132);
+        ctx.restore();
       } catch (qrErr) {
         console.warn('QR Code generation notice:', qrErr);
       }
-
-      // Format Student Name to Normal / Title Case so it doesn't collide
-      const cleanStudentName = data.studentName
-        .trim()
-        .split(/\s+/)
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-        .join(' ');
 
       // 3. Draw Dynamic Student Name (Centered cleanly on upper golden line without touching "This is to certify that")
       ctx.save();
