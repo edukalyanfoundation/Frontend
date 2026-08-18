@@ -83,7 +83,7 @@ export const DynamicCertificateModal: React.FC<DynamicCertificateModalProps> = (
       // Draw background image
       ctx.drawImage(bgImg, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-      // 2. Generate and Draw QR Code into Bottom Left Box
+      // 2. Generate and Draw QR Code into Bottom Left Box (Sized neatly inside gold frame)
       const qrPayload = [
         `EDUKALYAN FOUNDATION - VERIFIED CERTIFICATE`,
         `Candidate Name: ${data.studentName}`,
@@ -97,10 +97,10 @@ export const DynamicCertificateModal: React.FC<DynamicCertificateModalProps> = (
 
       try {
         const qrDataUrl = await QRCode.toDataURL(qrPayload, {
-          width: 146,
+          width: 126,
           margin: 1,
           color: {
-            dark: '#064e3b', // Rich dark green
+            dark: '#064e3b', // Rich dark green matching branding
             light: '#ffffff',
           },
           errorCorrectionLevel: 'M',
@@ -112,60 +112,67 @@ export const DynamicCertificateModal: React.FC<DynamicCertificateModalProps> = (
           qrImg.onload = () => res();
         });
 
-        // Exact QR Box location on 1536x1024: X=126, Y=746, W=148, H=148
-        ctx.drawImage(qrImg, 126, 746, 148, 148);
+        // Centered perfectly inside the gold box (Box: X=120..280, Y=740..898)
+        ctx.drawImage(qrImg, 137, 756, 126, 126);
       } catch (qrErr) {
         console.warn('QR Code generation notice:', qrErr);
       }
 
-      // 3. Draw Dynamic Student Name (Centered above "has Successfully completed")
+      // Format Student Name to Normal / Title Case so it doesn't collide
+      const cleanStudentName = data.studentName
+        .trim()
+        .split(/\s+/)
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(' ');
+
+      // 3. Draw Dynamic Student Name (Centered between "This is to certify that" and the upper golden line)
       ctx.save();
       ctx.textAlign = 'center';
       ctx.textBaseline = 'bottom';
-      ctx.font = 'bold 42px "Playfair Display", "Times New Roman", Georgia, serif';
-      ctx.fillStyle = '#064e3b'; // Deep emerald green matching header
-      // Line is at Y=370, text sits right above at Y=364
-      ctx.fillText(data.studentName.toUpperCase(), CANVAS_WIDTH / 2, 364);
+      ctx.font = 'bold 32px "Playfair Display", "Times New Roman", Georgia, serif';
+      ctx.fillStyle = '#064e3b'; // Deep emerald green
+      // Upper golden line is at Y=370. Text baseline at Y=362 sits cleanly on the line without touching "This is to certify that"
+      ctx.fillText(cleanStudentName, CANVAS_WIDTH / 2, 362);
       ctx.restore();
 
       // 4. Draw Dynamic Course / Internship Title (Centered above "undertaken by a student with")
       ctx.save();
       ctx.textAlign = 'center';
       ctx.textBaseline = 'bottom';
-      ctx.font = 'bold 26px "Inter", Arial, sans-serif';
+      ctx.font = 'bold 24px "Inter", Arial, sans-serif';
       ctx.fillStyle = '#0f172a'; // Deep slate navy
-      // Line is at Y=485, text sits right above at Y=480
-      ctx.fillText(data.courseName, CANVAS_WIDTH / 2, 480);
+      // Lower golden line is at Y=485. Text baseline at Y=478
+      ctx.fillText(data.courseName, CANVAS_WIDTH / 2, 478);
       ctx.restore();
 
-      // 5. Draw University Roll Number (To the right of "University Roll No.:")
+      // 5. Draw University Roll Number (Shifted slightly upward to align cleanly with label)
       ctx.save();
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
-      ctx.font = 'bold 20px "Inter", Arial, sans-serif';
+      ctx.font = 'bold 19px "Inter", Arial, sans-serif';
       ctx.fillStyle = '#0f172a';
-      // Label "University Roll No.:" ends around X=495, Y=588
-      ctx.fillText(data.universityRollNo, 500, 588);
+      // Label "University Roll No.:" is at Y=574
+      ctx.fillText(data.universityRollNo, 500, 574);
       ctx.restore();
 
-      // 6. Draw Registration Number (To the right of "Registration Number:")
+      // 6. Draw Registration Number (Shifted slightly upward to align cleanly with label)
       ctx.save();
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
-      ctx.font = 'bold 20px "Inter", Arial, sans-serif';
+      ctx.font = 'bold 19px "Inter", Arial, sans-serif';
       ctx.fillStyle = '#0f172a';
-      // Label "Registration Number:" ends around X=1055, Y=588
-      ctx.fillText(data.registrationNumber, 1060, 588);
+      // Label "Registration Number:" is at Y=574
+      ctx.fillText(data.registrationNumber, 1060, 574);
       ctx.restore();
 
-      // 7. Draw Certificate ID (To the right of "Certificate ID:")
+      // 7. Draw Certificate ID (Shifted slightly upward to align cleanly with "Certificate ID:")
       ctx.save();
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
       ctx.font = 'bold 18px "Consolas", monospace, sans-serif';
       ctx.fillStyle = '#064e3b';
-      // Label "Certificate ID:" ends around X=1240, Y=956
-      ctx.fillText(data.certificateId, 1250, 956);
+      // Label "Certificate ID:" is at Y=940
+      ctx.fillText(data.certificateId, 1245, 940);
       ctx.restore();
 
       // Generate Data URL for direct image preview
@@ -208,24 +215,24 @@ export const DynamicCertificateModal: React.FC<DynamicCertificateModalProps> = (
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-md animate-in fade-in duration-300"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4 bg-slate-950/85 backdrop-blur-md animate-in fade-in duration-300 overflow-y-auto"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-5xl rounded-3xl bg-slate-900 border border-slate-700/80 shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
+        className="relative w-full max-w-4xl rounded-3xl bg-slate-900 border border-slate-700/80 shadow-2xl overflow-hidden flex flex-col my-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Bar */}
-        <div className="flex items-center justify-between p-4 sm:p-5 border-b border-slate-800 bg-slate-950/60 shrink-0">
+        <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-3.5 border-b border-slate-800 bg-slate-950/70 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
+            <div className="h-9 w-9 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
               <Award className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
+              <h3 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
                 Official Verified Certificate <Sparkles className="h-4 w-4 text-amber-400" />
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-[11px] sm:text-xs text-slate-400">
                 Candidate: <strong className="text-white">{data.studentName}</strong> • ID: <strong className="text-emerald-400 font-mono">{data.certificateId}</strong>
               </p>
             </div>
@@ -239,21 +246,21 @@ export const DynamicCertificateModal: React.FC<DynamicCertificateModalProps> = (
           </button>
         </div>
 
-        {/* Certificate Display Area (Scrollable if screen is small) */}
-        <div className="p-4 sm:p-6 overflow-y-auto flex-1 flex flex-col items-center justify-center bg-slate-950/40">
+        {/* Certificate Display Area (Fits 100% in viewport without vertical cutting) */}
+        <div className="p-3 sm:p-5 flex flex-col items-center justify-center bg-slate-950/50 space-y-3">
           {/* Hidden Master Full-Res Canvas (1536 x 1024) */}
           <canvas ref={canvasRef} className="hidden" />
 
           {/* Rendered Visual Certificate Container */}
-          <div className="w-full max-w-4xl relative rounded-2xl overflow-hidden shadow-2xl border-2 border-slate-700/70 bg-white">
+          <div className="w-full flex items-center justify-center">
             {renderedDataUrl ? (
               <img
                 src={renderedDataUrl}
                 alt="Edukalyan Verified Certificate"
-                className="w-full h-auto object-contain block"
+                className="max-h-[60vh] sm:max-h-[65vh] w-auto max-w-full object-contain rounded-xl shadow-2xl border border-slate-700/60 block"
               />
             ) : (
-              <div className="w-full aspect-[1536/1024] flex flex-col items-center justify-center bg-slate-900 text-slate-300 space-y-3">
+              <div className="w-full aspect-[1536/1024] max-h-[60vh] flex flex-col items-center justify-center bg-slate-900 text-slate-300 space-y-3 rounded-xl">
                 <div className="h-8 w-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
                 <p className="text-xs font-bold">Rendering Dynamic Certificate & QR Code...</p>
               </div>
@@ -261,10 +268,10 @@ export const DynamicCertificateModal: React.FC<DynamicCertificateModalProps> = (
           </div>
 
           {/* Quick Notice */}
-          <div className="mt-4 p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs flex items-center gap-2 max-w-2xl text-center">
-            <CheckCircle2 className="h-4 w-4 shrink-0" />
+          <div className="px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] flex items-center gap-2 max-w-xl text-center">
+            <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
             <span>
-              Google Lens Verified: Scanning the QR code displays the candidate's name, sector, completion date, and official verification badge.
+              Google Lens Scannable: Shows candidate name, sector, and official verification badge.
             </span>
           </div>
         </div>
