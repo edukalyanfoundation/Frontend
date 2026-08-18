@@ -90,27 +90,18 @@ export const DynamicCertificateModal: React.FC<DynamicCertificateModalProps> = (
         .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
         .join(' ');
 
-      const qrPayload = [
-        `EDUKALYAN FOUNDATION`,
-        `VERIFIED CERTIFICATE`,
-        `Candidate: ${cleanStudentName}`,
-        `Course: ${data.courseName}`,
-        `Roll No: ${data.universityRollNo}`,
-        `Reg No: ${data.registrationNumber}`,
-        `Certificate ID: ${data.certificateId}`,
-        `Completion Date: ${data.completionDate}`,
-        `Verify Link: https://www.edukalyan.org/verify-certificate?id=${encodeURIComponent(data.certificateId)}`,
-      ].join('\n');
+      // Direct Verification URL (Google Lens & smartphone cameras instantly pop up a 1-tap link to view verified certificate)
+      const verifyUrl = `https://edukalyanfoundation.netlify.app/verify-certificate?id=${encodeURIComponent(data.certificateId)}&name=${encodeURIComponent(cleanStudentName)}&course=${encodeURIComponent(data.courseName)}&roll=${encodeURIComponent(data.universityRollNo)}&date=${encodeURIComponent(data.completionDate)}`;
 
       try {
-        const qrDataUrl = await QRCode.toDataURL(qrPayload, {
-          width: 320, // High-res master source for crisp scaling
-          margin: 2,  // Standard quiet zone margin required for camera scanning
+        const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
+          width: 320, // Master high-res source for crisp scaling
+          margin: 3,  // Standard quiet zone margin required for camera scanning
           color: {
             dark: '#000000', // Pure Solid Black (100% optical readability for Google Lens)
             light: '#ffffff', // Pure White background
           },
-          errorCorrectionLevel: 'M',
+          errorCorrectionLevel: 'L', // Level L creates large, bold, easily detectable blocks
         });
 
         const qrImg = new Image();
