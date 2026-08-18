@@ -19,21 +19,13 @@ import { uploadFileToCloudinary, deleteFileFromCloudinary } from '@/services/clo
 import { Video, FileText, Upload } from 'lucide-react';
 
 export const INTERNSHIP_SECTORS = [
-  'Teacher Training',
-  'Artificial Intelligence',
+  'Artificial Intelligence (AI)',
   'Cyber Security',
-  'Health Care',
-  'Disaster Management',
-  'Entrepreneurship',
-  'Agriculture',
-  'Skill & Personality',
-  'Politics & Governance',
-  'Graphics & Content',
-  'Tourism',
-  'Digital Literacy',
-  'Financial Literacy',
-  'Creative Writing',
+  'Healthcare',
+  'Graphics and Content',
+  'Finance',
   'Web Development',
+  'App Development',
 ];
 
 export const AdminCoursesPage: React.FC = () => {

@@ -69,23 +69,15 @@ export const UgcRegistrationForm: React.FC<UgcRegistrationFormProps> = ({
     return Object.values(passwordCriteria).filter(Boolean).length;
   }, [passwordCriteria]);
 
-  // Restricted strictly to the website's 15 course sectors
+  // Restricted strictly to the requested internship sectors
   const internshipSectors = [
-    'Teacher Training',
-    'Artificial Intelligence',
+    'Artificial Intelligence (AI)',
     'Cyber Security',
-    'Health Care',
-    'Disaster Management',
-    'Entrepreneurship',
-    'Agriculture',
-    'Skill & Personality',
-    'Politics & Governance',
-    'Graphics & Content',
-    'Tourism',
-    'Digital Literacy',
-    'Financial Literacy',
-    'Creative Writing',
+    'Healthcare',
+    'Graphics and Content',
+    'Finance',
     'Web Development',
+    'App Development',
   ];
 
   const handleSectorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
