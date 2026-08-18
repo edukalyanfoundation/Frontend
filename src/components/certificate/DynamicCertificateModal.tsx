@@ -125,14 +125,14 @@ export const DynamicCertificateModal: React.FC<DynamicCertificateModalProps> = (
         .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
         .join(' ');
 
-      // 3. Draw Dynamic Student Name (Centered between "This is to certify that" and the upper golden line)
+      // 3. Draw Dynamic Student Name (Centered cleanly on upper golden line without touching "This is to certify that")
       ctx.save();
       ctx.textAlign = 'center';
       ctx.textBaseline = 'bottom';
-      ctx.font = 'bold 32px "Playfair Display", "Times New Roman", Georgia, serif';
+      ctx.font = 'bold 28px "Playfair Display", "Times New Roman", Georgia, serif';
       ctx.fillStyle = '#064e3b'; // Deep emerald green
-      // Upper golden line is at Y=370. Text baseline at Y=362 sits cleanly on the line without touching "This is to certify that"
-      ctx.fillText(cleanStudentName, CANVAS_WIDTH / 2, 362);
+      // Upper golden line is at Y=370. Text baseline at Y=366 sits cleanly on the line with plenty of headroom below "This is to certify that"
+      ctx.fillText(cleanStudentName, CANVAS_WIDTH / 2, 366);
       ctx.restore();
 
       // 4. Draw Dynamic Course / Internship Title (Centered above "undertaken by a student with")
@@ -145,34 +145,34 @@ export const DynamicCertificateModal: React.FC<DynamicCertificateModalProps> = (
       ctx.fillText(data.courseName, CANVAS_WIDTH / 2, 478);
       ctx.restore();
 
-      // 5. Draw University Roll Number (Shifted slightly upward to align cleanly with label)
+      // 5. Draw University Roll Number (Aligned with baseline of "University Roll No.:" label)
       ctx.save();
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
       ctx.font = 'bold 19px "Inter", Arial, sans-serif';
       ctx.fillStyle = '#0f172a';
-      // Label "University Roll No.:" is at Y=574
-      ctx.fillText(data.universityRollNo, 500, 574);
+      // Label "University Roll No.:" baseline alignment at Y=586
+      ctx.fillText(data.universityRollNo, 500, 586);
       ctx.restore();
 
-      // 6. Draw Registration Number (Shifted slightly upward to align cleanly with label)
+      // 6. Draw Registration Number (Aligned with baseline of "Registration Number:" label)
       ctx.save();
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
       ctx.font = 'bold 19px "Inter", Arial, sans-serif';
       ctx.fillStyle = '#0f172a';
-      // Label "Registration Number:" is at Y=574
-      ctx.fillText(data.registrationNumber, 1060, 574);
+      // Label "Registration Number:" baseline alignment at Y=586
+      ctx.fillText(data.registrationNumber, 1060, 586);
       ctx.restore();
 
-      // 7. Draw Certificate ID (Shifted slightly upward to align cleanly with "Certificate ID:")
+      // 7. Draw Certificate ID (Aligned with baseline of "Certificate ID:" label)
       ctx.save();
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
       ctx.font = 'bold 18px "Consolas", monospace, sans-serif';
       ctx.fillStyle = '#064e3b';
-      // Label "Certificate ID:" is at Y=940
-      ctx.fillText(data.certificateId, 1245, 940);
+      // Label "Certificate ID:" baseline alignment at Y=954
+      ctx.fillText(data.certificateId, 1245, 954);
       ctx.restore();
 
       // Generate Data URL for direct image preview
