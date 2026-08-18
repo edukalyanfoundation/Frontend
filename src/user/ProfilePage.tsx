@@ -16,7 +16,6 @@ import {
   CheckCircle2,
   Calendar,
   FileCheck,
-  Download,
   ExternalLink,
   Clock,
   Sparkles,
@@ -24,6 +23,7 @@ import {
 } from 'lucide-react';
 
 import { normalizeSectorName } from '@/public/CoursesPage';
+import { DynamicCertificateModal, CertificateData } from '@/components/certificate/DynamicCertificateModal';
 
 export const ProfilePage: React.FC = () => {
   const { isAuthenticated, profile, updateProfileState, logout } = useAuthStore();
@@ -37,6 +37,10 @@ export const ProfilePage: React.FC = () => {
   }, [isAuthenticated, navigate]);
 
   const [activeTab, setActiveTab] = useState<'profile' | 'courses'>('profile');
+
+  // Certificate Modal State
+  const [isCertModalOpen, setIsCertModalOpen] = useState(false);
+  const [selectedCertData, setSelectedCertData] = useState<CertificateData | null>(null);
 
   const metadata = (profile?.metadata as Record<string, any>) || {};
 
@@ -92,47 +96,19 @@ export const ProfilePage: React.FC = () => {
     },
   ];
 
-  const handleDownloadCertificate = (certNo: string, courseTitle: string) => {
-    addToast({
-      type: 'success',
-      title: 'Downloading Certificate',
-      message: `Generating verified PDF certificate #${certNo} for ${courseTitle}`,
+  const handleOpenCertificateModal = (course: (typeof enrolledCourses)[0]) => {
+    setSelectedCertData({
+      studentName: displayName,
+      courseName: course.title,
+      universityRollNo: metadata.universityRollNo || '2201089201',
+      registrationNumber: metadata.universityRegNo || 'REG-2022-98421',
+      certificateId: course.certificateNo,
+      completionDate: course.completionDate,
+      sectorName: course.sector,
+      universityName: metadata.universityName || 'Recognized University',
+      collegeName: metadata.collegeName || 'Affiliated College',
     });
-
-    const certText = `
-============================================================
-              EDUKALYAN FOUNDATION (NGO)
-         PRACTICAL INTERNSHIP CERTIFICATE
-============================================================
-
-Certificate Number: ${certNo}
-Student Name:       ${displayName}
-University Roll No: ${metadata.universityRollNo || 'N/A'}
-University Reg No:  ${metadata.universityRegNo || 'N/A'}
-University:         ${metadata.universityName || 'Recognized University'}
-College:            ${metadata.collegeName || 'Affiliated College'}
-
-Course Title:       ${courseTitle}
-Internship Sector:  ${sectorStream}
-Issue Date:         ${new Date().toLocaleDateString()}
-Verification Status: VERIFIED & VALID
-
-This is to certify that ${displayName} has successfully completed
-the mandatory internship program organized by Edukalyan Foundation.
-
-Verified online at: https://edukalyan.org/verify-certificate
-============================================================
-    `;
-
-    const blob = new Blob([certText], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Edukalyan_Certificate_${certNo}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    setIsCertModalOpen(true);
   };
 
   return (
@@ -465,10 +441,10 @@ Verified online at: https://edukalyan.org/verify-certificate
                         </button>
 
                         <Button
-                          onClick={() => handleDownloadCertificate(course.certificateNo, course.title)}
-                          className="rounded-2xl font-extrabold text-xs sm:text-sm gap-2 bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-500/20 border-0 transition-all duration-300 hover:scale-[1.02] cursor-pointer"
+                          onClick={() => handleOpenCertificateModal(course)}
+                          className="rounded-2xl font-extrabold text-xs sm:text-sm gap-2 bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 hover:from-emerald-500 hover:to-indigo-500 text-white shadow-lg shadow-emerald-500/20 border-0 transition-all duration-300 hover:scale-[1.02] cursor-pointer"
                         >
-                          <Download className="h-4 w-4" /> View & Download Certificate
+                          <Award className="h-4 w-4" /> View & Download Certificate
                         </Button>
                       </div>
                     </div>
@@ -479,6 +455,15 @@ Verified online at: https://edukalyan.org/verify-certificate
           )}
         </main>
       </div>
+
+      {/* Dynamic Certificate Preview & Download Modal with Google Lens Scannable QR Code */}
+      {selectedCertData && (
+        <DynamicCertificateModal
+          isOpen={isCertModalOpen}
+          onClose={() => setIsCertModalOpen(false)}
+          data={selectedCertData}
+        />
+      )}
 
       {/* Main Website Footer */}
       <PublicFooter />
