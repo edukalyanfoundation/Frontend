@@ -43,11 +43,11 @@ export const BlogPage: React.FC = () => {
     },
     {
       id: 'b3',
-      title: 'UGC-Mandated Internship Guidelines: A Complete Student Roadmap',
+      title: 'Internship Guidelines: A Complete Student Roadmap',
       category: 'Academic Compliance',
       date: 'Jul 15, 2026',
       author: 'Edukalyan Academic Team',
-      excerpt: 'Understanding university requirements for UGC-compliant internship credits, project documentation, attendance logs, and marksheet generation.',
+      excerpt: 'Understanding university requirements for internship credits, project documentation, attendance logs, and marksheet generation.',
       readTime: '6 min read',
       image: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=800&q=80',
     },
@@ -90,7 +90,7 @@ export const BlogPage: React.FC = () => {
             </h1>
 
             <p className="text-slate-300 text-base sm:text-lg leading-relaxed font-normal">
-              Stay updated with internship guides, UGC compliance roadmaps, and career development articles from Edukalyan Foundation.
+              Stay updated with internship guides, academic compliance roadmaps, and career development articles from Edukalyan Foundation.
             </p>
 
             {/* Search Box */}

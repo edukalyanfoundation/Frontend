@@ -35,12 +35,12 @@ export const VerifyCertificatePage: React.FC = () => {
       setResult({
         rollNo: query.toUpperCase().trim(),
         studentName: 'Candidate Verification Passed',
-        courseName: 'UGC-Mandated Practical Internship Program',
+        courseName: 'Practical Internship Program',
         issueDate: 'July 15, 2026',
         validUntil: 'Lifetime Verification',
         grade: 'A+ (Outstanding Performance)',
         status: 'VERIFIED OFFICIAL CREDENTIAL',
-        accreditation: 'Issued by Edukalyan Foundation NGO (Govt & UGC Compliant)',
+        accreditation: 'Issued by Edukalyan Foundation NGO (Govt Compliant)',
       });
       setLoading(false);
       setSearched(true);

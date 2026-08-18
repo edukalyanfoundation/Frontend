@@ -51,7 +51,7 @@ export const AboutPage: React.FC = () => {
 
   const services = [
     { title: 'Internship Programs', icon: '🎓', desc: 'Hands-on practical industry project experience.' },
-    { title: 'Verified Certificates', icon: '📜', desc: 'Government & UGC compliant digital credentials.' },
+    { title: 'Verified Certificates', icon: '📜', desc: 'Government compliant verified digital credentials.' },
     { title: 'Career Guidance', icon: '💼', desc: 'One-on-one expert counseling and career roadmap.' },
     { title: 'Mentorship Programs', icon: '👨‍🏫', desc: 'Direct mentorship from senior corporate professionals.' },
     { title: 'Skill Development Courses', icon: '💻', desc: 'Practical tech, management, and soft skill workshops.' },
@@ -281,7 +281,7 @@ export const AboutPage: React.FC = () => {
                 Start Your Journey Today with <span className="bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">Edukalyan</span>
               </h2>
               <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-                Empowering Students. Transforming Futures. Complete your registration for UGC-mandated internship programs and verified certifications.
+                Empowering Students. Transforming Futures. Complete your registration for internship programs and verified certifications.
               </p>
               <div className="pt-4">
                 <a href="/#register-form">

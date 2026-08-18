@@ -7,7 +7,7 @@ export const CertificationDocuments: React.FC = () => {
     {
       icon: <Award className="h-8 w-8 text-amber-400" />,
       badgeBg: "from-amber-500/20 to-yellow-500/10 border-amber-500/30",
-      title: "UGC-Compliant Certificate",
+      title: "Verified Certificate",
       desc: "Official certificate recognized nationwide by universities & employers.",
     },
     {

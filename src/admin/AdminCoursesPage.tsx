@@ -55,7 +55,7 @@ export const AdminCoursesPage: React.FC = () => {
   const [profession, setProfession] = useState('');
   const [duration, setDuration] = useState('3 Months');
   const [mode, setMode] = useState('Online Live & Practical Project');
-  const [certificateType, setCertificateType] = useState('UGC Verified Certificate');
+  const [certificateType, setCertificateType] = useState('Verified Certificate');
   const [description, setDescription] = useState('');
   const [skillsStr, setSkillsStr] = useState('');
   const [rating, setRating] = useState(5.0);
@@ -82,7 +82,7 @@ export const AdminCoursesPage: React.FC = () => {
     setProfession('');
     setDuration('3 Months');
     setMode('Online Live & Practical Project');
-    setCertificateType('UGC Verified Certificate');
+    setCertificateType('Verified Certificate');
     setDescription('');
     setSkillsStr('');
     setRating(5.0);
@@ -154,7 +154,7 @@ export const AdminCoursesPage: React.FC = () => {
       profession: profession || 'Students & Beginners',
       duration: duration || '3 Months',
       mode: mode || 'Online',
-      certificate_type: certificateType || 'UGC Verified Certificate',
+      certificate_type: certificateType || 'Verified Certificate',
       description,
       skills: parsedSkills.length > 0 ? parsedSkills : ['Skill 1', 'Skill 2'],
       rating: Number(rating),
@@ -508,7 +508,7 @@ export const AdminCoursesPage: React.FC = () => {
                       type="text"
                       value={certificateType}
                       onChange={(e) => setCertificateType(e.target.value)}
-                      placeholder="e.g. UGC Verified Certificate"
+                      placeholder="e.g. Verified Certificate"
                       className="w-full rounded-2xl border border-slate-700 bg-slate-800 px-3.5 py-2.5 font-semibold text-white focus:outline-none focus:ring-2 focus:ring-purple-500/30"
                     />
                   </div>

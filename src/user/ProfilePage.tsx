@@ -70,7 +70,7 @@ export const ProfilePage: React.FC = () => {
   const enrolledCourses = [
     {
       id: 'crs-1',
-      title: `${sectorStream} & UGC Mandatory Internship`,
+      title: `${sectorStream} & Mandatory Internship`,
       sector: sectorStream,
       duration: '8 Weeks',
       completionDate: 'August 25, 2026',
@@ -81,7 +81,7 @@ export const ProfilePage: React.FC = () => {
     },
     {
       id: 'crs-2',
-      title: 'UGC Skill Development & Professional Ethics',
+      title: 'Skill Development & Professional Ethics',
       sector: 'Skill & Personality',
       duration: '4 Weeks',
       completionDate: 'July 10, 2026',
@@ -102,7 +102,7 @@ export const ProfilePage: React.FC = () => {
     const certText = `
 ============================================================
               EDUKALYAN FOUNDATION (NGO)
-        UGC MANDATED INTERNSHIP CERTIFICATE
+         PRACTICAL INTERNSHIP CERTIFICATE
 ============================================================
 
 Certificate Number: ${certNo}
@@ -118,7 +118,7 @@ Issue Date:         ${new Date().toLocaleDateString()}
 Verification Status: VERIFIED & VALID
 
 This is to certify that ${displayName} has successfully completed
-the UGC mandated internship program organized by Edukalyan Foundation.
+the mandatory internship program organized by Edukalyan Foundation.
 
 Verified online at: https://edukalyan.org/verify-certificate
 ============================================================
@@ -157,7 +157,7 @@ Verified online at: https://edukalyan.org/verify-certificate
 
                   <div className="space-y-2">
                     <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3.5 py-1 text-xs font-extrabold text-emerald-400 shadow-xs">
-                      <CheckCircle2 className="h-4 w-4" /> UGC Verified Student Candidate
+                      <CheckCircle2 className="h-4 w-4" /> Verified Student Candidate
                     </div>
                     <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-none">
                       {displayName}
@@ -215,7 +215,7 @@ Verified online at: https://edukalyan.org/verify-certificate
           {activeTab === 'profile' ? (
             /* Tab 1: Form Application Details */
             <div className="space-y-8">
-              {/* UGC Academic Credentials */}
+              {/* Academic Credentials */}
               <div className="group relative rounded-3xl border border-slate-800/80 bg-slate-900/60 backdrop-blur-xl p-6 sm:p-8 space-y-6 shadow-xl hover:border-indigo-500/40 transition-all duration-300 overflow-hidden">
                 <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
@@ -224,7 +224,7 @@ Verified online at: https://edukalyan.org/verify-certificate
                     <div className="p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
                       <GraduationCap className="h-5 w-5" />
                     </div>
-                    UGC Academic Credentials
+                    Academic Credentials
                   </h3>
                   <span className="text-xs font-extrabold px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shadow-xs">
                     Form Submitted
@@ -374,7 +374,7 @@ Verified online at: https://edukalyan.org/verify-certificate
                     <BookOpen className="h-7 w-7 text-indigo-400" /> My Courses & Verified Certificates
                   </h2>
                   <p className="text-xs sm:text-sm text-slate-300 mt-1 font-normal">
-                    Track your UGC-mandated course progress and view or download your verified certificates.
+                    Track your course progress and view or download your verified certificates.
                   </p>
                 </div>
               </div>

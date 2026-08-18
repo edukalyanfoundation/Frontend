@@ -275,7 +275,7 @@ export const UgcRegistrationForm: React.FC<UgcRegistrationFormProps> = ({
               transition={{ delay: 0.4 }}
               className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto leading-relaxed"
             >
-              Thank you for registering with Edukalyan Foundation for the UGC Mandated Internship Program. Your student profile is now active.
+              Thank you for registering with Edukalyan Foundation for the Practical Internship Program. Your student profile is now active.
             </motion.p>
 
             <motion.div
@@ -296,11 +296,11 @@ export const UgcRegistrationForm: React.FC<UgcRegistrationFormProps> = ({
             <div className="text-center space-y-2 border-b border-muted pb-6">
               <div className="inline-flex items-center gap-2 rounded-3xl bg-primary/10 border border-primary/20 px-4 py-1 text-xs font-bold text-primary">
                 <GraduationCap className="h-4 w-4" />
-                UGC Mandated Internship Program
+                Practical Internship Program
               </div>
               <h2 className="text-2xl sm:text-4xl font-extrabold text-foreground tracking-tight">Student Registration Form</h2>
               <p className="text-xs sm:text-sm text-muted-foreground">
-                Complete your registration for UGC-mandated internship program
+                Complete your registration for practical internship program
               </p>
             </div>
           <form onSubmit={handleSubmit} className="space-y-8 text-xs">
@@ -736,7 +736,7 @@ export const UgcRegistrationForm: React.FC<UgcRegistrationFormProps> = ({
               disabled={submitting}
               className="w-full rounded-2xl font-extrabold text-sm py-4 bg-primary text-primary-foreground hover:bg-primary/90 shadow-xl border border-primary/30"
             >
-              {submitting ? 'Submitting Registration...' : 'Complete UGC Registration'}
+              {submitting ? 'Submitting Registration...' : 'Complete Student Registration'}
             </Button>
           </form>
           </>

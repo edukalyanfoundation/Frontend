@@ -39,7 +39,7 @@ export const PublicFooter: React.FC = () => {
         <div>
           <h4 className="text-sm font-bold text-white mb-4">Student Zone</h4>
           <nav className="flex flex-col space-y-2.5 text-xs text-slate-400">
-            <a href="/#register-form" className="hover:text-indigo-400 transition-colors">UGC Student Registration Form</a>
+            <a href="/#register-form" className="hover:text-indigo-400 transition-colors">Student Registration Form</a>
             <Link to="/login" className="hover:text-indigo-400 transition-colors">Student Portal Login</Link>
             <Link to="/verify-certificate" className="hover:text-indigo-400 transition-colors">Verify Certificate Online</Link>
             <Link to="/about" className="hover:text-indigo-400 transition-colors">About Edukalyan Foundation</Link>

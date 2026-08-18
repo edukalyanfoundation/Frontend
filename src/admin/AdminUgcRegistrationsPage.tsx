@@ -349,7 +349,7 @@ export const AdminUgcRegistrationsPage: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="text-xl font-black text-white">{selectedCandidate.full_name}</h3>
-                    <p className="text-xs text-slate-400">Student UGC Registration Application Details</p>
+                    <p className="text-xs text-slate-400">Student Registration Application Details</p>
                   </div>
                 </div>
 

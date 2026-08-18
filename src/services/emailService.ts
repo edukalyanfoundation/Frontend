@@ -22,12 +22,12 @@ export const sendWelcomeEmail = async (fullName: string, userEmail: string) => {
         from: SENDER_EMAIL,
         reply_to: OFFICIAL_REPLY_TO,
         to: [userEmail],
-        subject: `Welcome to Edukalyan Foundation - UGC Internship Registration Confirmed`,
+        subject: `Welcome to Edukalyan Foundation - Internship Registration Confirmed`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 28px; border: 1px solid #e2e8f0; border-radius: 20px; background-color: #ffffff;">
             <div style="text-align: center; margin-bottom: 24px;">
               <h1 style="color: #4f46e5; margin: 0; font-size: 26px; font-weight: 900;">Edukalyan Foundation</h1>
-              <p style="color: #059669; font-size: 13px; margin-top: 6px; font-weight: bold; text-transform: uppercase;">Official UGC Mandated Internship Program</p>
+              <p style="color: #059669; font-size: 13px; margin-top: 6px; font-weight: bold; text-transform: uppercase;">Official Practical Internship Program</p>
             </div>
             
             <hr style="border: 0; border-top: 1px solid #f1f5f9; margin-bottom: 24px;" />
@@ -35,7 +35,7 @@ export const sendWelcomeEmail = async (fullName: string, userEmail: string) => {
             <h3 style="color: #1e293b; font-size: 18px; margin-bottom: 12px;">Dear ${fullName},</h3>
             
             <p style="font-size: 14px; color: #334155; line-height: 1.6;">
-              Congratulations! Your student registration for the <strong>UGC Mandated Practical Internship Program</strong> has been successfully submitted and verified by Edukalyan Foundation.
+              Congratulations! Your student registration for the <strong>Practical Internship Program</strong> has been successfully submitted and verified by Edukalyan Foundation.
             </p>
 
             <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; margin: 20px 0;">
@@ -90,7 +90,7 @@ export const sendWelcomeEmail = async (fullName: string, userEmail: string) => {
         reply_to: userEmail,
         to: [OFFICIAL_REPLY_TO],
         subject: `[New Registration Alert] ${fullName} (${userEmail})`,
-        html: `<p>New student candidate <strong>${fullName}</strong> (${userEmail}) has completed UGC registration.</p>`,
+        html: `<p>New student candidate <strong>${fullName}</strong> (${userEmail}) has completed student registration.</p>`,
       }),
     }).catch(() => {});
 

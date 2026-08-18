@@ -144,7 +144,7 @@ export function DesignAgency() {
 
   const services = [
     { title: 'Internship Programs', icon: '🎓', desc: 'Hands-on practical industry project experience.' },
-    { title: 'Verified Certificates', icon: '📜', desc: 'Government & UGC compliant digital credentials.' },
+    { title: 'Verified Certificates', icon: '📜', desc: 'Government compliant verified digital credentials.' },
     { title: 'Career Guidance', icon: '💼', desc: 'One-on-one expert counseling and career roadmap.' },
     { title: 'Mentorship Programs', icon: '👨‍🏫', desc: 'Direct mentorship from senior corporate professionals.' },
     { title: 'Skill Development Courses', icon: '💻', desc: 'Practical tech, management, and soft skill workshops.' },
@@ -293,7 +293,7 @@ export function DesignAgency() {
                     <div className="p-1 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">
                       <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
                     </div>
-                    <span className="font-bold text-[11px] sm:text-xs">UGC Internship Focus</span>
+                    <span className="font-bold text-[11px] sm:text-xs">Practical Internship Focus</span>
                   </div>
                   <div className="flex-1 min-w-[130px] flex items-center gap-2 p-2.5 rounded-2xl bg-slate-800/60 border border-slate-700/80 text-xs text-slate-200 backdrop-blur-md hover:border-indigo-500/40 hover:bg-indigo-950/30 transition-all shadow-xs">
                     <div className="p-1 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">
@@ -625,7 +625,7 @@ export function DesignAgency() {
                     <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
                     <div>
                       <h4 className="font-bold text-xs">Verified Certifications</h4>
-                      <p className="text-[10px] text-muted-foreground">UGC compliant credentials online.</p>
+                      <p className="text-[10px] text-muted-foreground">Official verified credentials online.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-card border border-muted">
@@ -715,7 +715,7 @@ export function DesignAgency() {
                 </div>
 
                 <div className="pt-4 border-t border-slate-800/80 flex items-center gap-2 text-xs text-emerald-400 font-semibold">
-                  <CheckCircle2 className="h-4 w-4" /> Official Government & UGC Compliant Organization
+                  <CheckCircle2 className="h-4 w-4" /> Official Government Compliant Organization
                 </div>
               </div>
 
@@ -820,7 +820,7 @@ export function DesignAgency() {
                     <div className="flex items-center gap-2.5">
                       <GraduationCap className="h-5 w-5 text-indigo-400" />
                       <span className="font-extrabold text-sm sm:text-base tracking-tight">
-                        UGC Student Internship Registration
+                        Student Internship Registration
                       </span>
                     </div>
                     <button

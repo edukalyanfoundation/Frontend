@@ -31,7 +31,7 @@ export const Sidebar: React.FC = () => {
   const adminLinks = [
     { to: '/admin', label: 'Admin Dashboard', icon: LayoutDashboard, end: true },
     { to: '/admin/inquiries', label: 'Student Inquiries', icon: MessageSquare },
-    { to: '/admin/ugc-registrations', label: 'UGC Registrations', icon: FileText },
+    { to: '/admin/ugc-registrations', label: 'Student Registrations', icon: FileText },
     { to: '/admin/users', label: 'User Management', icon: Users },
     { to: '/admin/roles', label: 'Roles & Permissions', icon: ShieldCheck },
     { to: '/admin/audit', label: 'System Audit Logs', icon: FileText },
