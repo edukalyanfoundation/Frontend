@@ -197,7 +197,7 @@ export const UgcRegistrationForm: React.FC<UgcRegistrationFormProps> = ({
 
       // 4. Send Welcome Email via Resend API
       if (formData.email) {
-        sendWelcomeEmail(formData.fullName, formData.email);
+        sendWelcomeEmail(formData.fullName, formData.email, formData.internshipSector);
       }
     } catch (err) {
       console.warn('Registration flow note:', err);
