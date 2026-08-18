@@ -9,8 +9,8 @@ const OFFICIAL_REPLY_TO = 'edukalyanfoundation@gmail.com';
  * Send Welcome & Registration Confirmation Email to Student
  */
 export const sendWelcomeEmail = async (fullName: string, userEmail: string, sectorName?: string) => {
-  const brevoApiKey = import.meta.env.VITE_BREVO_API_KEY || '';
-  const resendApiKey = import.meta.env.VITE_RESEND_API_KEY || '';
+  const brevoApiKey = (import.meta.env.VITE_BREVO_API_KEY || '').trim();
+  const resendApiKey = (import.meta.env.VITE_RESEND_API_KEY || '').trim();
 
   if (!userEmail) {
     console.warn('[Email Service]: No email provided for student.');
@@ -128,8 +128,8 @@ export const sendWelcomeEmail = async (fullName: string, userEmail: string, sect
  * Send Password Reset Email
  */
 export const sendPasswordResetEmail = async (userEmail: string, resetLink?: string) => {
-  const brevoApiKey = import.meta.env.VITE_BREVO_API_KEY || '';
-  const resendApiKey = import.meta.env.VITE_RESEND_API_KEY || '';
+  const brevoApiKey = (import.meta.env.VITE_BREVO_API_KEY || '').trim();
+  const resendApiKey = (import.meta.env.VITE_RESEND_API_KEY || '').trim();
 
   if (!userEmail) return;
 
