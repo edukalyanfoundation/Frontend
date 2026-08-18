@@ -23,6 +23,8 @@ import {
   LogOut,
 } from 'lucide-react';
 
+import { normalizeSectorName } from '@/public/CoursesPage';
+
 export const ProfilePage: React.FC = () => {
   const { isAuthenticated, profile, updateProfileState, logout } = useAuthStore();
   const { addToast } = useNotificationStore();
@@ -64,31 +66,29 @@ export const ProfilePage: React.FC = () => {
   };
 
   const displayName = `${firstName} ${lastName}`.trim() || profile?.email || 'Student Candidate';
-  const sectorStream = metadata.internshipSector || 'Web Development';
+  
+  // Student's exact registered sector (strictly locked to registration selection)
+  const rawSector = metadata.internshipSector || 'Artificial Intelligence (AI)';
+  const sectorStream = normalizeSectorName(rawSector) || rawSector;
 
-  // Candidate's Enrolled Courses & Certificates Sub-page Data
+  // Generate consistent certificate number based on student roll / reg number
+  const studentCertNo = metadata.universityRollNo
+    ? `EDK-2026-${String(metadata.universityRollNo).replace(/\D/g, '').slice(-5).padStart(5, '7')}`
+    : 'EDK-2026-84291';
+
+  // Only the candidate's selected internship sector course is displayed
   const enrolledCourses = [
     {
-      id: 'crs-1',
-      title: `${sectorStream} & Mandatory Internship`,
+      id: `crs-${sectorStream.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
+      title: `${sectorStream} Practical Internship & Capstone Project`,
       sector: sectorStream,
-      duration: '8 Weeks',
-      completionDate: 'August 25, 2026',
-      status: 'Active / In Progress',
-      certificateNo: `EDK-2026-${Math.floor(Math.random() * 89999 + 10000)}`,
-      instructor: 'Edukalyan Academic Council',
-      progress: 65,
-    },
-    {
-      id: 'crs-2',
-      title: 'Skill Development & Professional Ethics',
-      sector: 'Skill & Personality',
-      duration: '4 Weeks',
-      completionDate: 'July 10, 2026',
-      status: 'Completed',
-      certificateNo: `EDK-2026-${Math.floor(Math.random() * 89999 + 10000)}`,
-      instructor: 'Edukalyan Foundation Faculty',
-      progress: 100,
+      duration: '8 Weeks (Mandatory Practical Training)',
+      completionDate: 'October 15, 2026',
+      status: 'Active / Enrolled',
+      certificateNo: studentCertNo,
+      instructor: `Edukalyan ${sectorStream} Faculty Desk`,
+      progress: 75,
+      mode: 'Live Interactive Labs & Real-World Projects',
     },
   ];
 
@@ -447,19 +447,30 @@ Verified online at: https://edukalyan.org/verify-certificate
 
                     {/* Action Buttons */}
                     <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-slate-800/80">
-                      <a
-                        href="/verify-certificate"
-                        className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
-                      >
-                        <ExternalLink className="h-3.5 w-3.5" /> Online Certificate Verification Portal
-                      </a>
+                      <div className="flex items-center gap-4">
+                        <a
+                          href="/verify-certificate"
+                          className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
+                        >
+                          <ExternalLink className="h-3.5 w-3.5" /> Online Certificate Verification Portal
+                        </a>
+                      </div>
 
-                      <Button
-                        onClick={() => handleDownloadCertificate(course.certificateNo, course.title)}
-                        className="rounded-2xl font-extrabold text-xs sm:text-sm gap-2 bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-500/20 border-0 transition-all duration-300 hover:scale-[1.02]"
-                      >
-                        <Download className="h-4 w-4" /> View & Download Certificate
-                      </Button>
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <button
+                          onClick={() => navigate('/courses')}
+                          className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 text-indigo-300 font-extrabold text-xs transition-all hover:scale-105 cursor-pointer shadow-md"
+                        >
+                          <BookOpen className="h-4 w-4" /> Open Sector Course Portal →
+                        </button>
+
+                        <Button
+                          onClick={() => handleDownloadCertificate(course.certificateNo, course.title)}
+                          className="rounded-2xl font-extrabold text-xs sm:text-sm gap-2 bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-500/20 border-0 transition-all duration-300 hover:scale-[1.02] cursor-pointer"
+                        >
+                          <Download className="h-4 w-4" /> View & Download Certificate
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ))}
