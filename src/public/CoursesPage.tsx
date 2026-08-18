@@ -776,6 +776,43 @@ export const CoursesPage: React.FC = () => {
                   ))}
                 </div>
               </div>
+
+              {/* 7 Sectors Interactive Showcase Grid for Visitors */}
+              <div className="pt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-6xl mx-auto text-left">
+                {INTERNSHIP_SECTORS.map((sectorName) => {
+                  const sData = SECTOR_DATA[sectorName];
+                  const isSelected = selectedVisitorCategory === sectorName;
+                  return (
+                    <div
+                      key={sectorName}
+                      onClick={() => setSelectedVisitorCategory(isSelected ? 'All' : sectorName)}
+                      className={`p-5 rounded-3xl border transition-all duration-300 cursor-pointer flex flex-col justify-between space-y-3 ${
+                        isSelected
+                          ? 'bg-indigo-950/70 border-indigo-500 shadow-xl shadow-indigo-500/20 scale-[1.02]'
+                          : 'bg-slate-900/50 border-slate-800 hover:border-indigo-500/40 hover:bg-slate-800/50'
+                      }`}
+                    >
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/20">
+                            {sData?.badge || 'Practical Track'}
+                          </span>
+                          <span className="text-[11px] font-bold text-slate-400">8 Weeks</span>
+                        </div>
+                        <h3 className="font-extrabold text-white text-sm leading-snug">{sectorName}</h3>
+                        <p className="text-[11px] text-slate-300 line-clamp-2 leading-relaxed">
+                          {sData?.tagline || 'Comprehensive practical learning & live mentorship.'}
+                        </p>
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-xs text-indigo-400 font-bold">
+                        <span>{isSelected ? '✓ Viewing Sector' : 'Click to View Sector'}</span>
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </section>
 
             {/* Course Cards Grid */}
