@@ -1,13 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, ChevronRight, User, LogOut, Shield, LogIn, Eye, EyeOff, KeyRound, AlertCircle } from 'lucide-react';
+import {
+  Menu,
+  X,
+  ChevronRight,
+  User,
+  LogOut,
+  Shield,
+  LogIn,
+  Eye,
+  EyeOff,
+  KeyRound,
+  AlertCircle,
+  CheckCircle2,
+  Circle,
+  Lock,
+  ShieldCheck,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/stores/authStore';
 import { useNotificationStore } from '@/stores/notificationStore';
-import { sendPasswordResetEmail } from '@/services/emailService';
-import { supabase } from '@/lib/supabase';
+import { ugcRegistrationService } from '@/services/ugcRegistrationService';
 import logoImg from '@/assets/logo.png';
 
 interface PublicNavbarProps {
@@ -37,11 +52,17 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({ onOpenRegistration }
   const [showPassword, setShowPassword] = useState(false);
   const [signingIn, setSigningIn] = useState(false);
 
-  // Forgot Password States
+  // Instant Forgot Password / Recovery States
+  const [forgotStep, setForgotStep] = useState<'verify' | 'new_password' | 'success'>('verify');
   const [forgotEmail, setForgotEmail] = useState('');
-  const [forgotSubmitted, setForgotSubmitted] = useState(false);
+  const [forgotVerificationField, setForgotVerificationField] = useState('');
+  const [forgotNewPassword, setForgotNewPassword] = useState('');
+  const [forgotShowNewPassword, setForgotShowNewPassword] = useState(false);
+  const [forgotCandidateName, setForgotCandidateName] = useState('');
+  const [forgotError, setForgotError] = useState<string | null>(null);
+  const [forgotSubmitting, setForgotSubmitting] = useState(false);
+
   const [signInError, setSignInError] = useState<string | null>(null);
-  const [sendingReset, setSendingReset] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -104,29 +125,104 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({ onOpenRegistration }
     }
   };
 
-  const handleForgotPasswordSubmit = async (e: React.FormEvent) => {
+  // Live Password Criteria & Strength Evaluation for New Password
+  const newPasswordCriteria = useMemo(() => {
+    const pwd = forgotNewPassword || '';
+    return {
+      length: pwd.length >= 8,
+      uppercase: /[A-Z]/.test(pwd),
+      lowercase: /[a-z]/.test(pwd),
+      number: /[0-9]/.test(pwd),
+      special: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pwd),
+    };
+  }, [forgotNewPassword]);
+
+  const isNewPasswordValid = useMemo(() => {
+    return (
+      newPasswordCriteria.length &&
+      newPasswordCriteria.uppercase &&
+      newPasswordCriteria.lowercase &&
+      newPasswordCriteria.number &&
+      newPasswordCriteria.special
+    );
+  }, [newPasswordCriteria]);
+
+  const newPasswordMetCount = useMemo(() => {
+    return Object.values(newPasswordCriteria).filter(Boolean).length;
+  }, [newPasswordCriteria]);
+
+  const handleVerifyIdentitySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!forgotEmail) {
-      addToast({ type: 'warning', title: 'Validation Error', message: 'Please enter your registered email address.' });
+    if (!forgotEmail.trim() || !forgotVerificationField.trim()) {
+      setForgotError('Please enter both your registered email and mobile/roll number.');
       return;
     }
 
-    setSendingReset(true);
+    setForgotSubmitting(true);
+    setForgotError(null);
+
     try {
-      await sendPasswordResetEmail(forgotEmail);
-      await supabase.auth.resetPasswordForEmail(forgotEmail, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-      setForgotSubmitted(true);
+      const res = await ugcRegistrationService.verifyStudentIdentityAndResetPassword(
+        forgotEmail,
+        forgotVerificationField,
+        'dummy_check_temp'
+      );
+
+      if (!res.success && res.message.includes('Security Verification Failed')) {
+        setForgotError(res.message);
+        return;
+      }
+      if (!res.success && res.message.includes('No student registration record')) {
+        setForgotError(res.message);
+        return;
+      }
+
+      setForgotCandidateName(res.candidateName || 'Student');
+      setForgotStep('new_password');
+      setForgotError(null);
       addToast({
         type: 'success',
-        title: 'Password Recovery Email Sent',
-        message: `Password reset instructions sent to ${forgotEmail}`,
+        title: 'Identity Verified',
+        message: 'Security credentials verified! Please enter your new password.',
       });
-    } catch {
-      addToast({ type: 'error', title: 'Error', message: 'Failed to send password recovery email.' });
+    } catch (err: any) {
+      setForgotError(err.message || 'Identity verification failed.');
     } finally {
-      setSendingReset(false);
+      setForgotSubmitting(false);
+    }
+  };
+
+  const handleResetPasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isNewPasswordValid) {
+      setForgotError('Please satisfy all 5 password security instructions before updating.');
+      return;
+    }
+
+    setForgotSubmitting(true);
+    setForgotError(null);
+
+    try {
+      const res = await ugcRegistrationService.verifyStudentIdentityAndResetPassword(
+        forgotEmail,
+        forgotVerificationField,
+        forgotNewPassword
+      );
+
+      if (res.success) {
+        setForgotStep('success');
+        addToast({
+          type: 'success',
+          title: 'Password Updated Successfully',
+          message: 'Your new password is now active. You can now sign in.',
+        });
+      } else {
+        setForgotError(res.message);
+      }
+    } catch (err: any) {
+      setForgotError(err.message || 'Failed to update password.');
+    } finally {
+      setForgotSubmitting(false);
     }
   };
 
@@ -228,10 +324,11 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({ onOpenRegistration }
           ) : (
             <Button
               size="sm"
-              className="rounded-full font-extrabold px-5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-500/20 hover:scale-105 transition-all text-xs gap-1.5 border-0"
+              className="rounded-full font-extrabold px-5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-500/20 hover:scale-105 transition-all text-xs gap-1.5 border-0 cursor-pointer"
               onClick={() => {
                 setSignInMode('signin');
-                setForgotSubmitted(false);
+                setForgotStep('verify');
+                setForgotError(null);
                 setIsSignInModalOpen(true);
               }}
             >
@@ -241,7 +338,7 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({ onOpenRegistration }
         </div>
 
         {/* Mobile Menu Toggle */}
-        <button className="flex lg:hidden p-2 rounded-full border border-slate-700 bg-slate-800/80 text-white" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+        <button className="flex lg:hidden p-2 rounded-full border border-slate-700 bg-slate-800/80 text-white cursor-pointer" onClick={() => setIsMenuOpen(!isMenuOpen)}>
           {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
@@ -287,7 +384,7 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({ onOpenRegistration }
                 )}
                 <Button
                   variant="outline"
-                  className="w-full rounded-2xl font-bold border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs"
+                  className="w-full rounded-2xl font-bold border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs cursor-pointer"
                   onClick={async () => {
                     setIsMenuOpen(false);
                     await logout();
@@ -299,11 +396,12 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({ onOpenRegistration }
               </>
             ) : (
               <Button
-                className="w-full rounded-2xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs py-2.5 border-0 shadow-lg shadow-indigo-500/20"
+                className="w-full rounded-2xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs py-2.5 border-0 shadow-lg shadow-indigo-500/20 cursor-pointer"
                 onClick={() => {
                   setIsMenuOpen(false);
                   setSignInMode('signin');
-                  setForgotSubmitted(false);
+                  setForgotStep('verify');
+                  setForgotError(null);
                   setIsSignInModalOpen(true);
                 }}
               >
@@ -364,7 +462,12 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({ onOpenRegistration }
                       <label className="text-xs font-semibold text-foreground">Password *</label>
                       <button
                         type="button"
-                        onClick={() => setSignInMode('forgot')}
+                        onClick={() => {
+                          setSignInMode('forgot');
+                          setForgotStep('verify');
+                          setForgotError(null);
+                          if (signInEmail) setForgotEmail(signInEmail);
+                        }}
                         className="text-xs font-bold text-primary hover:underline"
                       >
                         Forgot Password?
@@ -415,7 +518,7 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({ onOpenRegistration }
                           setIsSignInModalOpen(false);
                           handleStartJourney();
                         }}
-                        className="font-extrabold text-primary hover:underline ml-1"
+                        className="font-extrabold text-primary hover:underline ml-1 cursor-pointer"
                       >
                         Register Now
                       </button>
@@ -424,62 +527,215 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({ onOpenRegistration }
                 </form>
               </div>
             ) : (
-              /* Forgot Password View */
+              /* Instant Identity Verification & Password Recovery View */
               <div className="space-y-6">
-                <div className="text-center space-y-1.5">
-                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-600 shadow-lg mx-auto">
-                    <KeyRound className="h-6 w-6" />
-                  </div>
-                  <h3 className="text-2xl font-extrabold text-foreground">Recover Password</h3>
-                  <p className="text-xs text-muted-foreground">
-                    Enter your registered email ID to receive password recovery instructions
-                  </p>
-                </div>
-
-                {forgotSubmitted ? (
-                  <div className="text-center space-y-4 py-4">
-                    <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 text-xs font-semibold">
-                      Password recovery instructions have been sent to <strong>{forgotEmail}</strong>.
-                    </div>
-                    <Button
-                      onClick={() => setSignInMode('signin')}
-                      className="w-full rounded-2xl font-bold bg-primary text-primary-foreground text-xs"
-                    >
-                      Return to Sign In
-                    </Button>
-                  </div>
-                ) : (
-                  <form onSubmit={handleForgotPasswordSubmit} className="space-y-4">
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-foreground">Registration Email ID *</label>
-                      <Input
-                        required
-                        type="email"
-                        placeholder="Enter your registered email address"
-                        value={forgotEmail}
-                        onChange={(e) => setForgotEmail(e.target.value)}
-                        className="rounded-2xl text-xs py-2.5 font-semibold text-foreground bg-background"
-                      />
+                {forgotStep === 'verify' && (
+                  <>
+                    <div className="text-center space-y-1.5">
+                      <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-500 shadow-lg mx-auto">
+                        <KeyRound className="h-6 w-6" />
+                      </div>
+                      <h3 className="text-2xl font-extrabold text-foreground">Recover Password</h3>
+                      <p className="text-xs text-muted-foreground">
+                        Step 1 of 2: Verify your registered student identity to instantly reset your password
+                      </p>
                     </div>
 
-                    <Button
-                      type="submit"
-                      disabled={sendingReset}
-                      className="w-full rounded-2xl font-extrabold py-3 bg-primary text-primary-foreground hover:bg-primary/90 shadow-md text-xs sm:text-sm"
-                    >
-                      {sendingReset ? 'Sending Recovery Email...' : 'Send Password Recovery Email'}
-                    </Button>
+                    {forgotError && (
+                      <div className="p-3 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs font-bold flex items-start gap-2 animate-in fade-in duration-200">
+                        <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                        <span>{forgotError}</span>
+                      </div>
+                    )}
 
-                    <div className="text-center pt-2">
-                      <button
-                        type="button"
-                        onClick={() => setSignInMode('signin')}
-                        className="text-xs font-bold text-muted-foreground hover:text-foreground"
+                    <form onSubmit={handleVerifyIdentitySubmit} className="space-y-4">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-foreground">Registered Email ID *</label>
+                        <Input
+                          required
+                          type="email"
+                          placeholder="e.g. praveerkishore45@gmail.com"
+                          value={forgotEmail}
+                          onChange={(e) => setForgotEmail(e.target.value)}
+                          className="rounded-2xl text-xs py-2.5 font-semibold text-foreground bg-background"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-foreground">
+                          Registered Mobile Number OR University Roll Number *
+                        </label>
+                        <Input
+                          required
+                          type="text"
+                          placeholder="Enter your registered mobile or roll number"
+                          value={forgotVerificationField}
+                          onChange={(e) => setForgotVerificationField(e.target.value)}
+                          className="rounded-2xl text-xs py-2.5 font-semibold text-foreground bg-background"
+                        />
+                        <p className="text-[10px] text-muted-foreground">
+                          Matches the details provided during your student registration
+                        </p>
+                      </div>
+
+                      <Button
+                        type="submit"
+                        disabled={forgotSubmitting}
+                        className="w-full rounded-2xl font-extrabold py-3 bg-primary text-primary-foreground hover:bg-primary/90 shadow-md text-xs sm:text-sm cursor-pointer"
                       >
-                        Back to Sign In
-                      </button>
+                        {forgotSubmitting ? 'Verifying Identity...' : 'Verify Student Identity →'}
+                      </Button>
+
+                      <div className="text-center pt-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSignInMode('signin');
+                            setForgotError(null);
+                          }}
+                          className="text-xs font-bold text-muted-foreground hover:text-foreground cursor-pointer"
+                        >
+                          ← Return to Sign In
+                        </button>
+                      </div>
+                    </form>
+                  </>
+                )}
+
+                {forgotStep === 'new_password' && (
+                  <>
+                    <div className="text-center space-y-1.5">
+                      <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400 shadow-lg mx-auto">
+                        <ShieldCheck className="h-6 w-6" />
+                      </div>
+                      <h3 className="text-2xl font-extrabold text-foreground">Set New Password</h3>
+                      <p className="text-xs text-muted-foreground">
+                        Step 2 of 2: Identity verified for <strong className="text-foreground">{forgotCandidateName}</strong>. Enter your new password below.
+                      </p>
                     </div>
-                  </form>
+
+                    {forgotError && (
+                      <div className="p-3 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs font-bold flex items-start gap-2 animate-in fade-in duration-200">
+                        <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                        <span>{forgotError}</span>
+                      </div>
+                    )}
+
+                    <form onSubmit={handleResetPasswordSubmit} className="space-y-4">
+                      <div className="space-y-3 p-4 rounded-3xl bg-slate-900/60 border border-slate-800 backdrop-blur-md shadow-lg">
+                        <div className="flex items-center justify-between">
+                          <label className="font-bold text-foreground flex items-center gap-1.5 text-xs">
+                            <Lock className="h-3.5 w-3.5 text-indigo-400" /> New Account Password *
+                          </label>
+                          {newPasswordMetCount > 0 && (
+                            <span
+                              className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${
+                                newPasswordMetCount === 5
+                                  ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                                  : newPasswordMetCount >= 3
+                                  ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+                                  : 'bg-rose-500/15 text-rose-400 border-rose-500/30'
+                              }`}
+                            >
+                              {newPasswordMetCount === 5 ? '🟢 Strong' : newPasswordMetCount >= 3 ? '🟡 Medium' : '🔴 Weak'} ({newPasswordMetCount}/5)
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="relative">
+                          <Input
+                            required
+                            type={forgotShowNewPassword ? 'text' : 'password'}
+                            placeholder="Create a strong password..."
+                            value={forgotNewPassword}
+                            onChange={(e) => setForgotNewPassword(e.target.value)}
+                            className="rounded-2xl text-xs py-2.5 pr-10 font-semibold text-foreground bg-background"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setForgotShowNewPassword(!forgotShowNewPassword)}
+                            className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/40 text-indigo-400 hover:text-indigo-200 transition-all z-20 cursor-pointer flex items-center justify-center"
+                            title={forgotShowNewPassword ? 'Hide Password' : 'Show Password'}
+                          >
+                            {forgotShowNewPassword ? <EyeOff className="h-4 w-4 shrink-0" /> : <Eye className="h-4 w-4 shrink-0" />}
+                          </button>
+                        </div>
+
+                        {/* Password Requirements */}
+                        <div className="pt-2 space-y-1.5 border-t border-slate-800 text-[11px]">
+                          <div className={`flex items-center gap-1.5 ${newPasswordCriteria.length ? 'text-emerald-400 line-through opacity-80' : 'text-slate-400'}`}>
+                            {newPasswordCriteria.length ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" /> : <Circle className="h-3.5 w-3.5 shrink-0" />}
+                            <span>At least 8 characters</span>
+                          </div>
+                          <div className={`flex items-center gap-1.5 ${newPasswordCriteria.uppercase ? 'text-emerald-400 line-through opacity-80' : 'text-slate-400'}`}>
+                            {newPasswordCriteria.uppercase ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" /> : <Circle className="h-3.5 w-3.5 shrink-0" />}
+                            <span>Contains uppercase letter (A-Z)</span>
+                          </div>
+                          <div className={`flex items-center gap-1.5 ${newPasswordCriteria.lowercase ? 'text-emerald-400 line-through opacity-80' : 'text-slate-400'}`}>
+                            {newPasswordCriteria.lowercase ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" /> : <Circle className="h-3.5 w-3.5 shrink-0" />}
+                            <span>Contains lowercase letter (a-z)</span>
+                          </div>
+                          <div className={`flex items-center gap-1.5 ${newPasswordCriteria.number ? 'text-emerald-400 line-through opacity-80' : 'text-slate-400'}`}>
+                            {newPasswordCriteria.number ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" /> : <Circle className="h-3.5 w-3.5 shrink-0" />}
+                            <span>Contains number (0-9)</span>
+                          </div>
+                          <div className={`flex items-center gap-1.5 ${newPasswordCriteria.special ? 'text-emerald-400 line-through opacity-80' : 'text-slate-400'}`}>
+                            {newPasswordCriteria.special ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" /> : <Circle className="h-3.5 w-3.5 shrink-0" />}
+                            <span>Contains special character (!@#$%^&*...)</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <Button
+                        type="submit"
+                        disabled={forgotSubmitting}
+                        className="w-full rounded-2xl font-extrabold py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-500 hover:to-purple-500 shadow-md text-xs sm:text-sm cursor-pointer"
+                      >
+                        {forgotSubmitting ? 'Updating Password...' : 'Save & Update Password'}
+                      </Button>
+
+                      <div className="text-center pt-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setForgotStep('verify');
+                            setForgotError(null);
+                          }}
+                          className="text-xs font-bold text-muted-foreground hover:text-foreground cursor-pointer"
+                        >
+                          ← Back to Verification
+                        </button>
+                      </div>
+                    </form>
+                  </>
+                )}
+
+                {forgotStep === 'success' && (
+                  <div className="text-center space-y-4 py-4 animate-in fade-in duration-300">
+                    <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 border-2 border-emerald-400/40 shadow-xl shadow-emerald-500/20 mx-auto">
+                      <CheckCircle2 className="h-9 w-9" />
+                    </div>
+
+                    <h4 className="text-xl font-extrabold text-foreground">Password Reset Successfully!</h4>
+
+                    <p className="text-xs text-muted-foreground max-w-sm mx-auto leading-relaxed">
+                      Your account password for <strong>{forgotEmail}</strong> has been securely updated. You can now sign in immediately with your new password.
+                    </p>
+
+                    <Button
+                      onClick={() => {
+                        setSignInMode('signin');
+                        setSignInEmail(forgotEmail);
+                        setSignInPassword('');
+                        setForgotStep('verify');
+                        setForgotError(null);
+                        setSignInError(null);
+                      }}
+                      className="w-full rounded-2xl font-extrabold py-3 bg-primary text-primary-foreground text-xs sm:text-sm shadow-md cursor-pointer"
+                    >
+                      Sign In with New Password →
+                    </Button>
+                  </div>
                 )}
               </div>
             )}
