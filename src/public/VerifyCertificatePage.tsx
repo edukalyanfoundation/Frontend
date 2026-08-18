@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { PublicNavbar } from '../components/layout/PublicNavbar';
@@ -19,41 +18,10 @@ interface CertificateResult {
 }
 
 export const VerifyCertificatePage: React.FC = () => {
-  const [searchParams] = useSearchParams();
   const [query, setQuery] = useState('');
   const [result, setResult] = useState<CertificateResult | null>(null);
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  // Automatically verify when opened via QR Code scan URL
-  useEffect(() => {
-    const idParam = searchParams.get('id') || searchParams.get('cert_id');
-    const nameParam = searchParams.get('name');
-    const courseParam = searchParams.get('course');
-    const rollParam = searchParams.get('roll') || searchParams.get('rollNo');
-    const dateParam = searchParams.get('date');
-
-    if (idParam || rollParam || nameParam) {
-      const q = (idParam || rollParam || '').toUpperCase().trim();
-      setQuery(q);
-      setLoading(true);
-
-      setTimeout(() => {
-        setResult({
-          rollNo: rollParam || q || 'Verified Roll',
-          studentName: nameParam || 'Verified Student Candidate',
-          courseName: courseParam || 'Practical Internship Program',
-          issueDate: dateParam || 'October 15, 2026',
-          validUntil: 'Lifetime Verification (Permanent Record)',
-          grade: 'A+ (Outstanding Performance)',
-          status: 'VERIFIED OFFICIAL CREDENTIAL',
-          accreditation: 'Issued by Edukalyan Foundation NGO (Govt Compliant)',
-        });
-        setLoading(false);
-        setSearched(true);
-      }, 300);
-    }
-  }, [searchParams]);
 
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,7 +36,7 @@ export const VerifyCertificatePage: React.FC = () => {
         rollNo: query.toUpperCase().trim(),
         studentName: 'Candidate Verification Passed',
         courseName: 'Practical Internship Program',
-        issueDate: 'October 15, 2026',
+        issueDate: 'July 15, 2026',
         validUntil: 'Lifetime Verification',
         grade: 'A+ (Outstanding Performance)',
         status: 'VERIFIED OFFICIAL CREDENTIAL',
@@ -76,7 +44,7 @@ export const VerifyCertificatePage: React.FC = () => {
       });
       setLoading(false);
       setSearched(true);
-    }, 400);
+    }, 600);
   };
 
   return (

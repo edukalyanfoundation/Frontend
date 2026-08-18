@@ -83,25 +83,32 @@ export const DynamicCertificateModal: React.FC<DynamicCertificateModalProps> = (
       // Draw background image
       ctx.drawImage(bgImg, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-      // 2. Generate and Draw High-Contrast QR Code into Bottom Left Box (Optimized for Google Lens & Phone Cameras)
+      // 2. Generate QR Code — Google Lens only decodes URLs reliably, so we encode
+      //    ALL certificate details as query parameters in a single verification URL.
       const cleanStudentName = data.studentName
         .trim()
         .split(/\s+/)
         .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
         .join(' ');
 
-      // Direct Verification URL (Google Lens & smartphone cameras instantly pop up a 1-tap link to view verified certificate)
-      const verifyUrl = `https://edukalyanfoundation.netlify.app/verify-certificate?id=${encodeURIComponent(data.certificateId)}&name=${encodeURIComponent(cleanStudentName)}&course=${encodeURIComponent(data.courseName)}&roll=${encodeURIComponent(data.universityRollNo)}&date=${encodeURIComponent(data.completionDate)}`;
+      // Build a verification URL with all certificate fields as query params
+      const verifyUrl = new URL('https://www.edukalyan.org/verify-certificate');
+      verifyUrl.searchParams.set('id', data.certificateId);
+      verifyUrl.searchParams.set('name', cleanStudentName);
+      verifyUrl.searchParams.set('course', data.courseName);
+      verifyUrl.searchParams.set('roll', data.universityRollNo);
+      verifyUrl.searchParams.set('reg', data.registrationNumber);
+      verifyUrl.searchParams.set('date', data.completionDate);
 
       try {
-        const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
-          width: 320, // Master high-res source for crisp scaling
-          margin: 3,  // Standard quiet zone margin required for camera scanning
+        const qrDataUrl = await QRCode.toDataURL(verifyUrl.toString(), {
+          width: 400,  // High-res source for crisp downscaling
+          margin: 2,   // Standard quiet zone for camera recognition
           color: {
-            dark: '#000000', // Pure Solid Black (100% optical readability for Google Lens)
-            light: '#ffffff', // Pure White background
+            dark: '#000000',  // Pure black for maximum optical contrast
+            light: '#ffffff', // Pure white background
           },
-          errorCorrectionLevel: 'L', // Level L creates large, bold, easily detectable blocks
+          errorCorrectionLevel: 'H', // Highest error correction for small printed QR
         });
 
         const qrImg = new Image();
@@ -111,9 +118,8 @@ export const DynamicCertificateModal: React.FC<DynamicCertificateModalProps> = (
         });
 
         ctx.save();
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        // Perfectly positioned inside the golden square frame (Frame: X=120..280, Y=740..898)
+        ctx.imageSmoothingEnabled = false; // Nearest-neighbor keeps QR modules sharp
+        // Positioned inside the golden square frame
         ctx.drawImage(qrImg, 134, 752, 132, 132);
         ctx.restore();
       } catch (qrErr) {
