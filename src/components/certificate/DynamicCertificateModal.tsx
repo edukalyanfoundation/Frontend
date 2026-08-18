@@ -83,32 +83,26 @@ export const DynamicCertificateModal: React.FC<DynamicCertificateModalProps> = (
       // Draw background image
       ctx.drawImage(bgImg, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-      // 2. Generate QR Code — Google Lens only decodes URLs reliably, so we encode
-      //    ALL certificate details as query parameters in a single verification URL.
+      // 2. Generate QR Code with SHORT plain text so modules stay large and scannable.
+      //    Fewer characters = fewer QR modules = larger dots = Google Lens can decode it.
       const cleanStudentName = data.studentName
         .trim()
         .split(/\s+/)
         .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
         .join(' ');
 
-      // Build a verification URL with all certificate fields as query params
-      const verifyUrl = new URL('https://www.edukalyan.org/verify-certificate');
-      verifyUrl.searchParams.set('id', data.certificateId);
-      verifyUrl.searchParams.set('name', cleanStudentName);
-      verifyUrl.searchParams.set('course', data.courseName);
-      verifyUrl.searchParams.set('roll', data.universityRollNo);
-      verifyUrl.searchParams.set('reg', data.registrationNumber);
-      verifyUrl.searchParams.set('date', data.completionDate);
+      // Keep payload SHORT — each extra character adds more tiny modules
+      const qrText = `EDUKALYAN FOUNDATION\nVERIFIED CERTIFICATE\n${cleanStudentName}\n${data.courseName}\nRoll: ${data.universityRollNo}\nReg: ${data.registrationNumber}\nID: ${data.certificateId}\nDate: ${data.completionDate}`;
 
       try {
-        const qrDataUrl = await QRCode.toDataURL(verifyUrl.toString(), {
-          width: 400,  // High-res source for crisp downscaling
-          margin: 2,   // Standard quiet zone for camera recognition
+        const qrDataUrl = await QRCode.toDataURL(qrText, {
+          width: 512,  // Very high-res master → crisp when scaled down
+          margin: 3,   // Generous quiet zone so camera finds the QR boundary
           color: {
-            dark: '#000000',  // Pure black for maximum optical contrast
-            light: '#ffffff', // Pure white background
+            dark: '#000000',
+            light: '#ffffff',
           },
-          errorCorrectionLevel: 'H', // Highest error correction for small printed QR
+          errorCorrectionLevel: 'L', // Low error correction = fewer modules = bigger dots = easier scan
         });
 
         const qrImg = new Image();
@@ -118,9 +112,9 @@ export const DynamicCertificateModal: React.FC<DynamicCertificateModalProps> = (
         });
 
         ctx.save();
-        ctx.imageSmoothingEnabled = false; // Nearest-neighbor keeps QR modules sharp
-        // Positioned inside the golden square frame
-        ctx.drawImage(qrImg, 134, 752, 132, 132);
+        ctx.imageSmoothingEnabled = false; // Pixel-sharp modules, no blurring
+        // Draw inside the golden square frame on the certificate template
+        ctx.drawImage(qrImg, 130, 748, 140, 140);
         ctx.restore();
       } catch (qrErr) {
         console.warn('QR Code generation notice:', qrErr);
