@@ -39,15 +39,6 @@ export const UgcRegistrationForm: React.FC<UgcRegistrationFormProps> = ({
     password: '',
   });
 
-  // Custom "Other" Input States
-  const [customUniversityName, setCustomUniversityName] = useState('');
-  const [customCollegeName, setCustomCollegeName] = useState('');
-  const [customDegree, setCustomDegree] = useState('');
-  const [customDepartment, setCustomDepartment] = useState('');
-  const [customSemester, setCustomSemester] = useState('');
-  const [customAcademicSession, setCustomAcademicSession] = useState('');
-  const [customMajorSubject, setCustomMajorSubject] = useState('');
-
   const [showPassword, setShowPassword] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -78,357 +69,6 @@ export const UgcRegistrationForm: React.FC<UgcRegistrationFormProps> = ({
     return Object.values(passwordCriteria).filter(Boolean).length;
   }, [passwordCriteria]);
 
-  // Structured Universities List (Jharkhand, Bihar, UP)
-  const universitiesList = [
-    {
-      group: 'Jharkhand Universities',
-      options: [
-        'Vinoba Bhave University, Hazaribagh',
-        'Ranchi University, Ranchi',
-        'Sido Kanhu Murmu University, Dumka',
-        'Kolhan University, Chaibasa',
-        'Dr. Shyama Prasad Mukherjee University, Ranchi',
-        'Binod Bihari Mahto Koylanchal University, Dhanbad',
-        'Jharkhand Rai University, Ranchi',
-        'Birsa Agricultural University, Ranchi',
-        'Central University of Jharkhand, Ranchi',
-        'BIT Mesra, Ranchi',
-        'NIT Jamshedpur',
-        'IIT (ISM) Dhanbad',
-      ],
-    },
-    {
-      group: 'Bihar Universities',
-      options: [
-        'Patna University, Patna',
-        'Patliputra University, Patna',
-        'Babasaheb Bhimrao Ambedkar Bihar University, Muzaffarpur',
-        'Magadh University, Bodh Gaya',
-        'Tilka Manjhi Bhagalpur University, Bhagalpur',
-        'Lalit Narayan Mithila University, Darbhanga',
-        'Purnea University, Purnea',
-        'Munger University, Munger',
-        'Maulana Mazharul Haque Arabic & Persian University, Patna',
-        'Aryabhatta Knowledge University, Patna',
-        'Nalanda Open University, Patna',
-        'Bihar Agricultural University, Sabour',
-        'IIT Patna',
-        'NIT Patna',
-      ],
-    },
-    {
-      group: 'Uttar Pradesh (UP) Universities',
-      options: [
-        'University of Lucknow, Lucknow',
-        'Dr. A.P.J. Abdul Kalam Technical University (AKTU), Lucknow',
-        'Chhatrapati Shahu Ji Maharaj University (CSJM), Kanpur',
-        'Chaudhary Charan Singh University (CCSU), Meerut',
-        'Mahatma Jyotiba Phule Rohilkhand University, Bareilly',
-        'Deen Dayal Upadhyaya Gorakhpur University, Gorakhpur',
-        'Dr. Bhimrao Ambedkar University, Agra',
-        'Veer Bahadur Singh Purvanchal University, Jaunpur',
-        'Bundelkhand University, Jhansi',
-        'Banaras Hindu University (BHU), Varanasi',
-        'Aligarh Muslim University (AMU), Aligarh',
-        'University of Allahabad, Prayagraj',
-        'IIT Kanpur',
-        'IIT (BHU) Varanasi',
-      ],
-    },
-  ];
-
-  // 1. University -> Affiliated Colleges Mapping
-  const universityCollegesMap: Record<string, string[]> = {
-    'Vinoba Bhave University, Hazaribagh': [
-      'Markham College of Commerce, Hazaribagh',
-      "St. Columba's College, Hazaribagh",
-      "K.B. Women's College, Hazaribagh",
-      'Annada College, Hazaribagh',
-      'Ramgarh College, Ramgarh',
-      'Adarsh College, Rajdhanwar',
-      'Giridih College, Giridih',
-    ],
-    'Ranchi University, Ranchi': [
-      "St. Xavier's College, Ranchi",
-      'Marwari College, Ranchi',
-      "Ranchi Women's College, Ranchi",
-      'J.N. College, Dhurwa, Ranchi',
-      'Doranda College, Ranchi',
-      'RLSY College, Ranchi',
-      'Gossner College, Ranchi',
-    ],
-    'Sido Kanhu Murmu University, Dumka': [
-      'S.P. College, Dumka',
-      'Deoghar College, Deoghar',
-      'A.S. College, Deoghar',
-      'Godda College, Godda',
-      'Sahibganj College, Sahibganj',
-    ],
-    'Kolhan University, Chaibasa': [
-      'Jamshedpur Co-operative College, Jamshedpur',
-      'Workers College, Jamshedpur',
-      'Karim City College, Jamshedpur',
-      'LBSM College, Jamshedpur',
-      "Jamshedpur Women's University",
-      'G.C. Jain Commerce College, Chaibasa',
-    ],
-    'Dr. Shyama Prasad Mukherjee University, Ranchi': [
-      'DSPMU Campus College, Ranchi',
-      'School of Science & Computer Applications, DSPMU',
-      'School of Humanities, DSPMU',
-    ],
-    'Binod Bihari Mahto Koylanchal University, Dhanbad': [
-      "SSLNT Women's College, Dhanbad",
-      'BBM College, Dhanbad',
-      'B.S. City College, Bokaro',
-      'Chas College, Bokaro',
-      'Katras College, Katrasgarh',
-      'RS More College, Govindpur',
-    ],
-    'Patna University, Patna': [
-      'Patna Science College, Patna',
-      'Patna College, Patna',
-      'B.N. College, Patna',
-      'Magadh Mahila College, Patna',
-      "Patna Women's College, Patna",
-    ],
-    'Patliputra University, Patna': [
-      'Anugrah Narayan College (A.N. College), Patna',
-      'College of Commerce, Arts and Science, Patna',
-      'TPS College, Patna',
-      'BD College, Patna',
-      "J.D. Women's College, Patna",
-    ],
-    'Babasaheb Bhimrao Ambedkar Bihar University, Muzaffarpur': [
-      'Langat Singh College (L.S. College), Muzaffarpur',
-      'M.D.D.M. College, Muzaffarpur',
-      'R.D.S. College, Muzaffarpur',
-    ],
-    'Magadh University, Bodh Gaya': [
-      'Gaya College, Gaya',
-      'A.M. College, Gaya',
-      'Gautam Buddha Mahila College, Gaya',
-    ],
-    'Tilka Manjhi Bhagalpur University, Bhagalpur': [
-      'T.N.B. College, Bhagalpur',
-      'Marwari College, Bhagalpur',
-      'S.M. College, Bhagalpur',
-    ],
-    'Lalit Narayan Mithila University, Darbhanga': [
-      'C.M. Science College, Darbhanga',
-      'C.M. College, Darbhanga',
-      'R.K. College, Madhubani',
-    ],
-    'University of Lucknow, Lucknow': [
-      'National P.G. College, Lucknow',
-      'Isabella Thoburn College (IT College), Lucknow',
-      'Lucknow Christian College, Lucknow',
-    ],
-    'Dr. A.P.J. Abdul Kalam Technical University (AKTU), Lucknow': [
-      'Institute of Engineering and Technology (IET), Lucknow',
-      'KNIT Sultanpur',
-      'BIET Jhansi',
-      'JSS Academy of Technical Education, Noida',
-    ],
-    'Chhatrapati Shahu Ji Maharaj University (CSJM), Kanpur': [
-      'Christ Church College, Kanpur',
-      'D.A.V. College, Kanpur',
-      'V.S.S.D. College, Kanpur',
-    ],
-    'Chaudhary Charan Singh University (CCSU), Meerut': [
-      'Meerut College, Meerut',
-      'D.N. College, Meerut',
-      'R.G. P.G. College, Meerut',
-    ],
-    'Dr. Bhimrao Ambedkar University, Agra': [
-      "St. John's College, Agra",
-      'Agra College, Agra',
-      'R.B.S. College, Agra',
-    ],
-    'University of Allahabad, Prayagraj': [
-      'Ewing Christian College, Prayagraj',
-      'K.P. Higher Education Institute, Prayagraj',
-      'C.M.P. Degree College, Prayagraj',
-    ],
-  };
-
-  // Default Colleges List (if no specific university selected)
-  const defaultCollegesList = [
-    {
-      group: 'Jharkhand Colleges',
-      options: [
-        "St. Xavier's College, Ranchi",
-        'Marwari College, Ranchi',
-        'Jamshedpur Co-operative College, Jamshedpur',
-        "SSLNT Women's College, Dhanbad",
-        'Markham College of Commerce, Hazaribagh',
-        "Ranchi Women's College, Ranchi",
-      ],
-    },
-    {
-      group: 'Bihar Colleges',
-      options: [
-        'Patna Science College, Patna',
-        'Patna College, Patna',
-        'Anugrah Narayan College (A.N. College), Patna',
-        'College of Commerce, Arts and Science, Patna',
-        'Langat Singh College (L.S. College), Muzaffarpur',
-      ],
-    },
-    {
-      group: 'Uttar Pradesh (UP) Colleges',
-      options: [
-        'National P.G. College, Lucknow',
-        'Christ Church College, Kanpur',
-        "St. John's College, Agra",
-        'Bareilly College, Bareilly',
-        'Meerut College, Meerut',
-      ],
-    },
-  ];
-
-  // 2. Degree -> Departments Mapping
-  const degreeDepartmentsMap: Record<string, string[]> = {
-    'B.Tech / B.E.': [
-      'Computer Science & Engineering',
-      'Information Technology',
-      'Electronics & Communication',
-      'Electrical Engineering',
-      'Mechanical Engineering',
-      'Civil Engineering',
-      'Chemical & Biotech Engineering',
-    ],
-    'BCA': [
-      'Computer Applications',
-      'Software Systems & Web Design',
-      'Data Science & Cloud Computing',
-      'Network & Cyber Security',
-    ],
-    'B.Sc': [
-      'Computer Science',
-      'Biological & Life Sciences',
-      'Mathematics & Statistics',
-      'Physics & Electronics',
-      'Chemistry & Material Science',
-      'Biotechnology & Microbiology',
-    ],
-    'B.Com': [
-      'Commerce & Accounting',
-      'Banking & Finance',
-      'Corporate Taxation & Auditing',
-      'E-Commerce & Digital Business',
-    ],
-    'B.A.': [
-      'Arts & Humanities',
-      'English Literature',
-      'Political Science & Governance',
-      'Economics & Public Policy',
-      'History & Sociology',
-      'Journalism & Mass Communication',
-    ],
-    'BBA': [
-      'Management Studies',
-      'Marketing & Advertising',
-      'Human Resources & Talent Management',
-      'Business Analytics & Strategy',
-    ],
-    'MCA / M.Sc / M.A.': [
-      'Advanced Computer Applications',
-      'Computer Science & AI',
-      'Commerce & Financial Analytics',
-      'English & Linguistics',
-      'Applied Mathematics & Statistics',
-    ],
-    'Diploma / Polytechnic': [
-      'Computer Engineering Technology',
-      'Civil & Architectural Technology',
-      'Electrical & Electronics Technology',
-      'Mechanical Technology',
-    ],
-  };
-
-  // 3. Department -> Major Subjects Mapping
-  const departmentSubjectsMap: Record<string, string[]> = {
-    'Computer Science & Engineering': [
-      'Data Structures & Algorithms',
-      'Artificial Intelligence & Machine Learning',
-      'Full Stack Web Development',
-      'Database Management Systems',
-      'Computer Networks & Cyber Security',
-      'Operating Systems & Cloud Architecture',
-    ],
-    'Information Technology': [
-      'Web Technologies & Services',
-      'Information Security & Cryptography',
-      'Cloud Infrastructure',
-      'Python & Java Software Development',
-      'Database Systems',
-    ],
-    'Electronics & Communication': [
-      'Digital Signal Processing',
-      'Microprocessors & Embedded Systems',
-      'VLSI Design',
-      'Wireless Communication Networks',
-    ],
-    'Computer Applications': [
-      'Web Development & JavaScript Frameworks',
-      'Database Administration & SQL',
-      'Object-Oriented Programming (Java/C++)',
-      'Python Application Development',
-      'Software Engineering Principles',
-    ],
-    'Commerce & Accounting': [
-      'Corporate Financial Accounting',
-      'Cost & Management Accounting',
-      'Income Tax & GST Regulations',
-      'Auditing & Assurance Standards',
-      'Business Economics & Finance',
-    ],
-    'Banking & Finance': [
-      'Banking Laws & Credit Operations',
-      'Financial Markets & Investment Analysis',
-      'Corporate Finance & Valuation',
-      'Risk Management & Insurance',
-    ],
-    'Management Studies': [
-      'Business Strategy & Leadership',
-      'Marketing Management & Branding',
-      'Human Resource Management',
-      'Financial Management & Budgeting',
-      'Organizational Behavior',
-    ],
-    'Arts & Humanities': [
-      'Political Theory & Constitutional Law',
-      'Macroeconomics & Development Studies',
-      'Modern World History',
-      'Indian Sociology & Social Work',
-    ],
-    'English Literature': [
-      'British & American Literature',
-      'Indian Writing in English',
-      'Linguistics & Phonetics',
-      'Creative & Professional Writing',
-    ],
-    'Biological & Life Sciences': [
-      'Molecular Biology & Cell Physiology',
-      'Genetics & Bioinformatics',
-      'Microbiology & Biotechnology',
-      'Biochemistry & Clinical Research',
-    ],
-    'Mathematics & Statistics': [
-      'Linear Algebra & Calculus',
-      'Probability & Statistical Inference',
-      'Numerical Methods & Optimization',
-      'Differential Equations',
-    ],
-    'Physics & Electronics': [
-      'Quantum Mechanics & Optics',
-      'Semiconductor Devices & Circuits',
-      'Electromagnetism',
-      'Digital Electronics & Microcontrollers',
-    ],
-  };
-
   // Restricted strictly to the website's 15 course sectors
   const internshipSectors = [
     'Teacher Training',
@@ -448,73 +88,6 @@ export const UgcRegistrationForm: React.FC<UgcRegistrationFormProps> = ({
     'Web Development',
   ];
 
-  // Dynamic College List calculation based on selected University
-  const availableColleges = useMemo(() => {
-    if (formData.universityName && universityCollegesMap[formData.universityName]) {
-      return universityCollegesMap[formData.universityName];
-    }
-    return null;
-  }, [formData.universityName]);
-
-  // Dynamic Department List calculation based on selected Degree
-  const availableDepartments = useMemo(() => {
-    if (formData.degree && degreeDepartmentsMap[formData.degree]) {
-      return degreeDepartmentsMap[formData.degree];
-    }
-    return [
-      'Computer Science & Engineering',
-      'Information Technology',
-      'Electronics & Communication',
-      'Commerce & Accounting',
-      'Management Studies',
-      'Arts & Humanities',
-      'Education & Pedagogy',
-      'Biological & Life Sciences',
-    ];
-  }, [formData.degree]);
-
-  // Dynamic Major Subject List calculation based on selected Department
-  const availableMajorSubjects = useMemo(() => {
-    if (formData.department && departmentSubjectsMap[formData.department]) {
-      return departmentSubjectsMap[formData.department];
-    }
-    return [
-      'Computer Applications',
-      'Artificial Intelligence',
-      'Business Administration',
-      'Mathematics & Statistics',
-      'English Literature',
-      'Physics & Electronics',
-    ];
-  }, [formData.department]);
-
-  const handleUniversityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const val = e.target.value;
-    setFormData((prev) => ({
-      ...prev,
-      universityName: val,
-      collegeName: '', // Reset college selection when university changes
-    }));
-  };
-
-  const handleDegreeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const val = e.target.value;
-    setFormData((prev) => ({
-      ...prev,
-      degree: val,
-      department: '', // Reset department when degree changes
-    }));
-  };
-
-  const handleDepartmentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const val = e.target.value;
-    setFormData((prev) => ({
-      ...prev,
-      department: val,
-      majorSubject: '', // Reset major subject when department changes
-    }));
-  };
-
   const handleSectorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value;
     setFormData((prev) => ({ ...prev, internshipSector: val }));
@@ -533,53 +106,18 @@ export const UgcRegistrationForm: React.FC<UgcRegistrationFormProps> = ({
 
     setSubmitting(true);
 
-    const finalUniversity =
-      formData.universityName === 'Other (Specify below)'
-        ? customUniversityName
-        : formData.universityName;
-
-    const finalCollege =
-      formData.collegeName === 'Other (Specify below)'
-        ? customCollegeName
-        : formData.collegeName;
-
-    const finalDegree =
-      formData.degree === 'Other (Specify below)'
-        ? customDegree
-        : formData.degree;
-
-    const finalDepartment =
-      formData.department === 'Other (Specify below)'
-        ? customDepartment
-        : formData.department;
-
-    const finalSemester =
-      formData.semester === 'Other (Specify below)'
-        ? customSemester
-        : formData.semester;
-
-    const finalAcademicSession =
-      formData.academicSession === 'Other (Specify below)'
-        ? customAcademicSession
-        : formData.academicSession;
-
-    const finalMajorSubject =
-      formData.majorSubject === 'Other (Specify below)'
-        ? customMajorSubject
-        : formData.majorSubject;
-
     try {
       // 1. Submit Registration Record to Supabase ugc_registrations Table
       const record = await ugcRegistrationService.submitRegistration({
-        university_name: finalUniversity,
-        college_name: finalCollege,
-        degree: finalDegree,
-        department: finalDepartment,
-        semester: finalSemester,
-        academic_session: finalAcademicSession,
+        university_name: formData.universityName,
+        college_name: formData.collegeName,
+        degree: formData.degree,
+        department: formData.department,
+        semester: formData.semester,
+        academic_session: formData.academicSession,
         university_roll_no: formData.universityRollNo,
         university_reg_no: formData.universityRegNo,
-        major_subject: finalMajorSubject,
+        major_subject: formData.majorSubject,
         internship_sector: formData.internshipSector,
         full_name: formData.fullName,
         father_name: formData.fatherName,
@@ -637,15 +175,15 @@ export const UgcRegistrationForm: React.FC<UgcRegistrationFormProps> = ({
           updated_at: new Date().toISOString(),
           deleted_at: null,
           metadata: {
-            universityName: finalUniversity,
-            collegeName: finalCollege,
-            degree: finalDegree,
-            department: finalDepartment,
-            semester: finalSemester,
-            academicSession: finalAcademicSession,
+            universityName: formData.universityName,
+            collegeName: formData.collegeName,
+            degree: formData.degree,
+            department: formData.department,
+            semester: formData.semester,
+            academicSession: formData.academicSession,
             universityRollNo: formData.universityRollNo,
             universityRegNo: formData.universityRegNo,
-            majorSubject: finalMajorSubject,
+            majorSubject: formData.majorSubject,
             internshipSector: formData.internshipSector,
             fatherName: formData.fatherName,
             motherName: formData.motherName,
@@ -773,230 +311,79 @@ export const UgcRegistrationForm: React.FC<UgcRegistrationFormProps> = ({
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* 1. University Select & Conditional Input */}
+                {/* 1. University Name */}
                 <div className="space-y-1.5">
                   <label className="font-semibold text-foreground">University Name *</label>
-                  <select
+                  <Input
                     required
+                    placeholder="Enter University Name"
                     value={formData.universityName}
-                    onChange={handleUniversityChange}
-                    className={selectClassName}
-                  >
-                    <option value="" className={optionClassName}>Select University Name</option>
-                    {universitiesList.map((group) => (
-                      <optgroup key={group.group} label={group.group} className="font-bold text-primary">
-                        {group.options.map((uni) => (
-                          <option key={uni} value={uni} className={optionClassName}>
-                            {uni}
-                          </option>
-                        ))}
-                      </optgroup>
-                    ))}
-                    <option value="Other (Specify below)" className="font-bold text-indigo-600 dark:text-indigo-400">
-                      Other (Specify below)
-                    </option>
-                  </select>
-
-                  {formData.universityName === 'Other (Specify below)' && (
-                    <div className="pt-1 space-y-1">
-                      <Input
-                        required
-                        placeholder="Please Enter Your University Name *"
-                        value={customUniversityName}
-                        onChange={(e) => setCustomUniversityName(e.target.value)}
-                        className="rounded-2xl text-xs py-2.5 font-semibold text-foreground bg-background border-primary/40 focus:ring-primary"
-                      />
-                    </div>
-                  )}
+                    onChange={(e) => setFormData({ ...formData, universityName: e.target.value })}
+                    className="rounded-2xl text-xs py-2.5 font-semibold text-foreground bg-background"
+                  />
                 </div>
 
-                {/* 2. College Select (Dependent on selected University) */}
+                {/* 2. College Name */}
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-foreground">
-                    College Name * {formData.universityName && formData.universityName !== 'Other (Specify below)' && `(Affiliated to ${formData.universityName.split(',')[0]})`}
-                  </label>
-                  <select
+                  <label className="font-semibold text-foreground">College Name *</label>
+                  <Input
                     required
+                    placeholder="Enter College Name"
                     value={formData.collegeName}
                     onChange={(e) => setFormData({ ...formData, collegeName: e.target.value })}
-                    className={selectClassName}
-                  >
-                    <option value="" className={optionClassName}>Select College Name</option>
-                    {availableColleges ? (
-                      availableColleges.map((col) => (
-                        <option key={col} value={col} className={optionClassName}>
-                          {col}
-                        </option>
-                      ))
-                    ) : (
-                      defaultCollegesList.map((group) => (
-                        <optgroup key={group.group} label={group.group} className="font-bold text-primary">
-                          {group.options.map((col) => (
-                            <option key={col} value={col} className={optionClassName}>
-                              {col}
-                            </option>
-                          ))}
-                        </optgroup>
-                      ))
-                    )}
-                    <option value="Other (Specify below)" className="font-bold text-indigo-600 dark:text-indigo-400">
-                      Other (Specify below)
-                    </option>
-                  </select>
-
-                  {formData.collegeName === 'Other (Specify below)' && (
-                    <div className="pt-1 space-y-1">
-                      <Input
-                        required
-                        placeholder="Please Enter Your College Name *"
-                        value={customCollegeName}
-                        onChange={(e) => setCustomCollegeName(e.target.value)}
-                        className="rounded-2xl text-xs py-2.5 font-semibold text-foreground bg-background border-primary/40 focus:ring-primary"
-                      />
-                    </div>
-                  )}
+                    className="rounded-2xl text-xs py-2.5 font-semibold text-foreground bg-background"
+                  />
                 </div>
 
-                {/* 3. Degree Select & Conditional Input */}
+                {/* 3. Degree */}
                 <div className="space-y-1.5">
                   <label className="font-semibold text-foreground">Degree *</label>
-                  <select
+                  <Input
                     required
+                    placeholder="Enter Degree"
                     value={formData.degree}
-                    onChange={handleDegreeChange}
-                    className={selectClassName}
-                  >
-                    <option value="" className={optionClassName}>Select Degree</option>
-                    <option value="B.Tech / B.E." className={optionClassName}>B.Tech / B.E.</option>
-                    <option value="BCA" className={optionClassName}>BCA</option>
-                    <option value="B.Sc" className={optionClassName}>B.Sc</option>
-                    <option value="B.Com" className={optionClassName}>B.Com</option>
-                    <option value="B.A." className={optionClassName}>B.A.</option>
-                    <option value="BBA" className={optionClassName}>BBA</option>
-                    <option value="MCA / M.Sc / M.A." className={optionClassName}>MCA / M.Sc / M.A.</option>
-                    <option value="Diploma / Polytechnic" className={optionClassName}>Diploma / Polytechnic</option>
-                    <option value="Other (Specify below)" className="font-bold text-indigo-600 dark:text-indigo-400">
-                      Other (Specify below)
-                    </option>
-                  </select>
-
-                  {formData.degree === 'Other (Specify below)' && (
-                    <div className="pt-1 space-y-1">
-                      <Input
-                        required
-                        placeholder="Please Enter Your Degree *"
-                        value={customDegree}
-                        onChange={(e) => setCustomDegree(e.target.value)}
-                        className="rounded-2xl text-xs py-2.5 font-semibold text-foreground bg-background border-primary/40 focus:ring-primary"
-                      />
-                    </div>
-                  )}
+                    onChange={(e) => setFormData({ ...formData, degree: e.target.value })}
+                    className="rounded-2xl text-xs py-2.5 font-semibold text-foreground bg-background"
+                  />
                 </div>
 
-                {/* 4. Department Select (Dependent on selected Degree) */}
+                {/* 4. Department/Stream */}
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-foreground">
-                    Department/Stream * {formData.degree && formData.degree !== 'Other (Specify below)' && `(For ${formData.degree})`}
-                  </label>
-                  <select
+                  <label className="font-semibold text-foreground">Department/Stream *</label>
+                  <Input
                     required
+                    placeholder="Enter Department/Stream"
                     value={formData.department}
-                    onChange={handleDepartmentChange}
-                    className={selectClassName}
-                  >
-                    <option value="" className={optionClassName}>Select Department/Stream</option>
-                    {availableDepartments.map((dept) => (
-                      <option key={dept} value={dept} className={optionClassName}>
-                        {dept}
-                      </option>
-                    ))}
-                    <option value="Other (Specify below)" className="font-bold text-indigo-600 dark:text-indigo-400">
-                      Other (Specify below)
-                    </option>
-                  </select>
-
-                  {formData.department === 'Other (Specify below)' && (
-                    <div className="pt-1 space-y-1">
-                      <Input
-                        required
-                        placeholder="Please Enter Your Department/Stream *"
-                        value={customDepartment}
-                        onChange={(e) => setCustomDepartment(e.target.value)}
-                        className="rounded-2xl text-xs py-2.5 font-semibold text-foreground bg-background border-primary/40 focus:ring-primary"
-                      />
-                    </div>
-                  )}
+                    onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                    className="rounded-2xl text-xs py-2.5 font-semibold text-foreground bg-background"
+                  />
                 </div>
 
-                {/* 5. Semester Select & Conditional Input */}
+                {/* 5. Semester */}
                 <div className="space-y-1.5">
                   <label className="font-semibold text-foreground">Semester *</label>
-                  <select
+                  <Input
                     required
+                    placeholder="Enter Semester"
                     value={formData.semester}
                     onChange={(e) => setFormData({ ...formData, semester: e.target.value })}
-                    className={selectClassName}
-                  >
-                    <option value="" className={optionClassName}>Select Semester</option>
-                    <option value="Semester 1" className={optionClassName}>Semester 1</option>
-                    <option value="Semester 2" className={optionClassName}>Semester 2</option>
-                    <option value="Semester 3" className={optionClassName}>Semester 3</option>
-                    <option value="Semester 4" className={optionClassName}>Semester 4</option>
-                    <option value="Semester 5" className={optionClassName}>Semester 5</option>
-                    <option value="Semester 6" className={optionClassName}>Semester 6</option>
-                    <option value="Semester 7" className={optionClassName}>Semester 7</option>
-                    <option value="Semester 8" className={optionClassName}>Semester 8</option>
-                    <option value="Other (Specify below)" className="font-bold text-indigo-600 dark:text-indigo-400">
-                      Other (Specify below)
-                    </option>
-                  </select>
-
-                  {formData.semester === 'Other (Specify below)' && (
-                    <div className="pt-1 space-y-1">
-                      <Input
-                        required
-                        placeholder="Please Enter Your Semester *"
-                        value={customSemester}
-                        onChange={(e) => setCustomSemester(e.target.value)}
-                        className="rounded-2xl text-xs py-2.5 font-semibold text-foreground bg-background border-primary/40 focus:ring-primary"
-                      />
-                    </div>
-                  )}
+                    className="rounded-2xl text-xs py-2.5 font-semibold text-foreground bg-background"
+                  />
                 </div>
 
-                {/* 6. Academic Session Select & Conditional Input */}
+                {/* 6. Academic Session */}
                 <div className="space-y-1.5">
                   <label className="font-semibold text-foreground">Academic Session *</label>
-                  <select
+                  <Input
                     required
+                    placeholder="Enter Academic Session"
                     value={formData.academicSession}
                     onChange={(e) => setFormData({ ...formData, academicSession: e.target.value })}
-                    className={selectClassName}
-                  >
-                    <option value="" className={optionClassName}>Select Academic Session</option>
-                    <option value="2023 - 2026" className={optionClassName}>2023 - 2026</option>
-                    <option value="2023 - 2027" className={optionClassName}>2023 - 2027</option>
-                    <option value="2024 - 2027" className={optionClassName}>2024 - 2027</option>
-                    <option value="2024 - 2028" className={optionClassName}>2024 - 2028</option>
-                    <option value="2025 - 2028" className={optionClassName}>2025 - 2028</option>
-                    <option value="Other (Specify below)" className="font-bold text-indigo-600 dark:text-indigo-400">
-                      Other (Specify below)
-                    </option>
-                  </select>
-
-                  {formData.academicSession === 'Other (Specify below)' && (
-                    <div className="pt-1 space-y-1">
-                      <Input
-                        required
-                        placeholder="Please Enter Your Academic Session *"
-                        value={customAcademicSession}
-                        onChange={(e) => setCustomAcademicSession(e.target.value)}
-                        className="rounded-2xl text-xs py-2.5 font-semibold text-foreground bg-background border-primary/40 focus:ring-primary"
-                      />
-                    </div>
-                  )}
+                    className="rounded-2xl text-xs py-2.5 font-semibold text-foreground bg-background"
+                  />
                 </div>
 
+                {/* 7. University Roll Number */}
                 <div className="space-y-1.5">
                   <label className="font-semibold text-foreground">University Roll Number *</label>
                   <Input
@@ -1008,6 +395,7 @@ export const UgcRegistrationForm: React.FC<UgcRegistrationFormProps> = ({
                   />
                 </div>
 
+                {/* 8. University Registration Number */}
                 <div className="space-y-1.5">
                   <label className="font-semibold text-foreground">University Registration Number *</label>
                   <Input
@@ -1019,42 +407,19 @@ export const UgcRegistrationForm: React.FC<UgcRegistrationFormProps> = ({
                   />
                 </div>
 
-                {/* 7. Major Subject Select (Dependent on selected Department) */}
+                {/* 9. Major Subject */}
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-foreground">
-                    Major Subject * {formData.department && formData.department !== 'Other (Specify below)' && `(For ${formData.department})`}
-                  </label>
-                  <select
+                  <label className="font-semibold text-foreground">Major Subject *</label>
+                  <Input
                     required
+                    placeholder="Enter Major Subject"
                     value={formData.majorSubject}
                     onChange={(e) => setFormData({ ...formData, majorSubject: e.target.value })}
-                    className={selectClassName}
-                  >
-                    <option value="" className={optionClassName}>Select Major Subject</option>
-                    {availableMajorSubjects.map((sub) => (
-                      <option key={sub} value={sub} className={optionClassName}>
-                        {sub}
-                      </option>
-                    ))}
-                    <option value="Other (Specify below)" className="font-bold text-indigo-600 dark:text-indigo-400">
-                      Other (Specify below)
-                    </option>
-                  </select>
-
-                  {formData.majorSubject === 'Other (Specify below)' && (
-                    <div className="pt-1 space-y-1">
-                      <Input
-                        required
-                        placeholder="Please Enter Your Major Subject *"
-                        value={customMajorSubject}
-                        onChange={(e) => setCustomMajorSubject(e.target.value)}
-                        className="rounded-2xl text-xs py-2.5 font-semibold text-foreground bg-background border-primary/40 focus:ring-primary"
-                      />
-                    </div>
-                  )}
+                    className="rounded-2xl text-xs py-2.5 font-semibold text-foreground bg-background"
+                  />
                 </div>
 
-                {/* Internship Sector Select - Restricted strictly to website 15 course sectors */}
+                {/* 10. Internship Sector Select - Kept as dropdown options */}
                 <div className="space-y-1.5">
                   <label className="font-semibold text-foreground">Internship Sector *</label>
                   <select
