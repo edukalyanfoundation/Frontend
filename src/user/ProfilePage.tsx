@@ -16,6 +16,10 @@ import {
   CheckCircle2,
   Calendar,
   FileCheck,
+  FileSignature,
+  CalendarCheck,
+  FileText,
+  Download,
   ExternalLink,
   Clock,
   Sparkles,
@@ -23,7 +27,8 @@ import {
 } from 'lucide-react';
 
 import { normalizeSectorName } from '@/public/CoursesPage';
-import { DynamicCertificateModal, CertificateData } from '@/components/certificate/DynamicCertificateModal';
+import { CertificateData } from '@/components/certificate/DynamicCertificateModal';
+import { DynamicDocumentModal, DocumentType } from '@/components/certificate/DynamicDocumentModal';
 
 export const ProfilePage: React.FC = () => {
   const { isAuthenticated, profile, updateProfileState, logout } = useAuthStore();
@@ -38,8 +43,9 @@ export const ProfilePage: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<'profile' | 'courses'>('profile');
 
-  // Certificate Modal State
-  const [isCertModalOpen, setIsCertModalOpen] = useState(false);
+  // Document Modal State
+  const [isDocModalOpen, setIsDocModalOpen] = useState(false);
+  const [selectedDocType, setSelectedDocType] = useState<DocumentType>('certificate');
   const [selectedCertData, setSelectedCertData] = useState<CertificateData | null>(null);
 
   const metadata = (profile?.metadata as Record<string, any>) || {};
@@ -96,7 +102,58 @@ export const ProfilePage: React.FC = () => {
     },
   ];
 
-  const handleOpenCertificateModal = (course: (typeof enrolledCourses)[0]) => {
+  const courseDocuments = [
+    {
+      type: 'certificate' as DocumentType,
+      title: '1. Official Verified Certificate',
+      badge: 'Master Certificate',
+      icon: Award,
+      btnGradient: 'from-emerald-600 via-teal-600 to-indigo-600 hover:from-emerald-500 hover:to-indigo-500',
+      description: 'High-res scannable QR verified master certificate.',
+    },
+    {
+      type: 'acceptance_letter' as DocumentType,
+      title: '2. Internship Acceptance Letter',
+      badge: 'Admission Confirmation',
+      icon: FileCheck,
+      btnGradient: 'from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500',
+      description: 'Official confirmation letter granting program admission.',
+    },
+    {
+      type: 'consent_letter' as DocumentType,
+      title: '3. Internship Consent Letter',
+      badge: 'NOC & Undertaking',
+      icon: FileSignature,
+      btnGradient: 'from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500',
+      description: 'NOC guidelines and student agreement record.',
+    },
+    {
+      type: 'completion_certificate' as DocumentType,
+      title: '4. Internship Completion Certificate',
+      badge: 'Training Completed',
+      icon: CheckCircle2,
+      btnGradient: 'from-teal-600 to-emerald-700 hover:from-teal-500 hover:to-emerald-600',
+      description: 'Certifies 8-week practical capstone project completion.',
+    },
+    {
+      type: 'attendance_certificate' as DocumentType,
+      title: '5. Internship Attendance Certificate',
+      badge: '100% Attendance Log',
+      icon: CalendarCheck,
+      btnGradient: 'from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500',
+      description: 'Official record validating candidate session attendance.',
+    },
+    {
+      type: 'internship_report' as DocumentType,
+      title: '6. Internship Report',
+      badge: 'Academic Evaluation',
+      icon: FileText,
+      btnGradient: 'from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500',
+      description: 'Detailed evaluation report ready for university submission.',
+    },
+  ];
+
+  const handleOpenDocumentModal = (course: (typeof enrolledCourses)[0], docType: DocumentType = 'certificate') => {
     setSelectedCertData({
       studentName: displayName,
       courseName: course.title,
@@ -108,7 +165,8 @@ export const ProfilePage: React.FC = () => {
       universityName: metadata.universityName || 'Recognized University',
       collegeName: metadata.collegeName || 'Affiliated College',
     });
-    setIsCertModalOpen(true);
+    setSelectedDocType(docType);
+    setIsDocModalOpen(true);
   };
 
   return (
@@ -421,7 +479,55 @@ export const ProfilePage: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Action Buttons */}
+                    {/* 6 Official Downloadable Documents Section */}
+                    <div className="space-y-3 pt-4 border-t border-slate-800/80">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-sm font-black text-white flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-emerald-400" />
+                          Official Course Completion Documents & Credentials (6 Available)
+                        </h4>
+                        <span className="text-[11px] font-extrabold px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                          Ready for Download
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {courseDocuments.map((doc) => {
+                          const DocIcon = doc.icon;
+                          return (
+                            <div
+                              key={doc.type}
+                              className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800/80 hover:border-indigo-500/40 transition-all flex flex-col justify-between space-y-3 group/doc"
+                            >
+                              <div className="space-y-1">
+                                <div className="flex items-center justify-between gap-2">
+                                  <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-md bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                                    {doc.badge}
+                                  </span>
+                                  <DocIcon className="h-4 w-4 text-slate-400 group-hover/doc:text-indigo-400 transition-colors" />
+                                </div>
+                                <h5 className="font-extrabold text-xs text-white group-hover/doc:text-indigo-300 transition-colors">
+                                  {doc.title}
+                                </h5>
+                                <p className="text-[11px] text-slate-400 leading-tight">
+                                  {doc.description}
+                                </p>
+                              </div>
+
+                              <Button
+                                onClick={() => handleOpenDocumentModal(course, doc.type)}
+                                size="sm"
+                                className={`w-full rounded-xl font-extrabold text-[11px] py-2 gap-1.5 bg-gradient-to-r ${doc.btnGradient} text-white shadow-md border-0 cursor-pointer transition-all hover:scale-[1.02]`}
+                              >
+                                <Download className="h-3.5 w-3.5" /> View & Download
+                              </Button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Action Links Bar */}
                     <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-slate-800/80">
                       <div className="flex items-center gap-4">
                         <a
@@ -435,17 +541,10 @@ export const ProfilePage: React.FC = () => {
                       <div className="flex items-center gap-3 flex-wrap">
                         <button
                           onClick={() => navigate('/courses')}
-                          className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 text-indigo-300 font-extrabold text-xs transition-all hover:scale-105 cursor-pointer shadow-md"
+                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 text-indigo-300 font-extrabold text-xs transition-all hover:scale-105 cursor-pointer shadow-md"
                         >
                           <BookOpen className="h-4 w-4" /> Open Sector Course Portal →
                         </button>
-
-                        <Button
-                          onClick={() => handleOpenCertificateModal(course)}
-                          className="rounded-2xl font-extrabold text-xs sm:text-sm gap-2 bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 hover:from-emerald-500 hover:to-indigo-500 text-white shadow-lg shadow-emerald-500/20 border-0 transition-all duration-300 hover:scale-[1.02] cursor-pointer"
-                        >
-                          <Award className="h-4 w-4" /> View & Download Certificate
-                        </Button>
                       </div>
                     </div>
                   </div>
@@ -456,11 +555,12 @@ export const ProfilePage: React.FC = () => {
         </main>
       </div>
 
-      {/* Dynamic Certificate Preview & Download Modal with Google Lens Scannable QR Code */}
+      {/* Dynamic Official Document Preview & Download Modal */}
       {selectedCertData && (
-        <DynamicCertificateModal
-          isOpen={isCertModalOpen}
-          onClose={() => setIsCertModalOpen(false)}
+        <DynamicDocumentModal
+          isOpen={isDocModalOpen}
+          onClose={() => setIsDocModalOpen(false)}
+          documentType={selectedDocType}
           data={selectedCertData}
         />
       )}
