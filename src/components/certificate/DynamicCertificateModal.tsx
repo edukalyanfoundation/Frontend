@@ -124,10 +124,22 @@ export const DynamicCertificateModal: React.FC<DynamicCertificateModalProps> = (
       ctx.save();
       ctx.textAlign = 'center';
       ctx.textBaseline = 'bottom';
-      ctx.font = 'bold 28px "Playfair Display", "Times New Roman", Georgia, serif';
+      
+      // Font size reduced to 21px so capital letters leave generous clearance below "This is to certify that"
+      let nameFontSize = 21;
+      ctx.font = `bold ${nameFontSize}px "Playfair Display", "Times New Roman", Georgia, serif`;
+
+      // Dynamic auto-scaling for longer student names
+      const maxNameWidth = 760;
+      const measuredWidth = ctx.measureText(cleanStudentName).width;
+      if (measuredWidth > maxNameWidth) {
+        nameFontSize = Math.max(14, Math.floor((maxNameWidth / measuredWidth) * nameFontSize));
+        ctx.font = `bold ${nameFontSize}px "Playfair Display", "Times New Roman", Georgia, serif`;
+      }
+
       ctx.fillStyle = '#064e3b'; // Deep emerald green
-      // Upper golden line is at Y=370. Text baseline at Y=366 sits cleanly on the line with plenty of headroom below "This is to certify that"
-      ctx.fillText(cleanStudentName, CANVAS_WIDTH / 2, 366);
+      // Upper golden line is at Y=370. Text baseline at Y=368 sits cleanly on the line with plenty of headroom below "This is to certify that"
+      ctx.fillText(cleanStudentName, CANVAS_WIDTH / 2, 368);
       ctx.restore();
 
       // 4. Draw Dynamic Course / Internship Title (Centered above "undertaken by a student with")
